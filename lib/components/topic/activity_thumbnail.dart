@@ -24,7 +24,6 @@ class ActivityThumbnail extends ConsumerWidget {
     final size = MediaQuery.of(context).size;
     return Container(
       width: size.width * 0.20,
-      height: size.height * 0.30,
       decoration: BoxDecoration(
         color: AppColors.offWhite,
         borderRadius: BorderRadius.circular(kRadius),

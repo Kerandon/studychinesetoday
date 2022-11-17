@@ -7,8 +7,8 @@ import 'package:studychinesetoday/configs/constants.dart';
 
 import '../models/topic.dart';
 
-Future<List<Topic>> getAllTopics({required WidgetRef ref}) async {
-  List<Topic> topics = [];
+Future<Set<Topic>> getAllTopics({required WidgetRef ref}) async {
+  Set<Topic> topics = {};
   final snapshot = await FirebaseFirestore.instance.collection(kTopics).get();
   for (var d in snapshot.docs) {
     Map<String, dynamic> topicData = d.get('topicdata');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'flashcard_settings.dart';
 
 class SideBarFlashcards extends StatefulWidget {
   const SideBarFlashcards({
@@ -25,7 +26,7 @@ class _SideBarFlashcardsState extends State<SideBarFlashcards> {
       width: _isExpanded ? size.width * 0.20 : size.width * 0.05,
       height: double.infinity,
       decoration: const BoxDecoration(
-        color: Colors.amber,
+        color: Colors.black12,
       ),
       child: Column(
         children: [
@@ -40,9 +41,10 @@ class _SideBarFlashcardsState extends State<SideBarFlashcards> {
                     child: Icon(Icons.expand),
                   ),
           ),
-          ListTile(
+          const ListTile(
             title: Text('Settings'),
           ),
+          const FlashcardsSettings()
         ],
       ),
     );

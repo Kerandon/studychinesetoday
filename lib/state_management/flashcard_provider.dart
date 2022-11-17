@@ -5,7 +5,7 @@ import '../utils/enums/card_stages.dart';
 
 class FlashcardManager {
   final int currentIndex;
-  final int totalCards;
+  final int totalNumberOfCards;
   final Map<String, String> urls;
   final Map<int, bool> flipCard;
   final List<Map<int, bool>> hasHalfFlipped;
@@ -16,10 +16,11 @@ class FlashcardManager {
   final bool roundCompleted;
   final int roundIndex;
   final bool sessionCompleted;
+  final int maxNumberOfCards;
 
   FlashcardManager({
     required this.currentIndex,
-    required this.totalCards,
+    required this.totalNumberOfCards,
     required this.urls,
     required this.flipCard,
     required this.hasHalfFlipped,
@@ -30,6 +31,7 @@ class FlashcardManager {
     required this.roundCompleted,
     required this.roundIndex,
     required this.sessionCompleted,
+    required this.maxNumberOfCards,
   });
 
   FlashcardManager copyWith({
@@ -45,10 +47,11 @@ class FlashcardManager {
     bool? roundCompleted,
     int? roundIndex,
     bool? sessionCompleted,
+    int? maxNumberOfCards,
   }) {
     return FlashcardManager(
       currentIndex: currentIndex ?? this.currentIndex,
-      totalCards: totalCards ?? this.totalCards,
+      totalNumberOfCards: totalCards ?? this.totalNumberOfCards,
       urls: urls ?? this.urls,
       flipCard: flipCard ?? this.flipCard,
       hasHalfFlipped: hasHalfFlipped ?? this.hasHalfFlipped,
@@ -59,6 +62,7 @@ class FlashcardManager {
       roundCompleted: roundCompleted ?? this.roundCompleted,
       roundIndex: roundIndex ?? this.roundIndex,
       sessionCompleted: sessionCompleted ?? this.sessionCompleted,
+      maxNumberOfCards: maxNumberOfCards ?? this.maxNumberOfCards,
     );
   }
 }
@@ -136,6 +140,11 @@ class FlashcardNotifier extends StateNotifier<FlashcardManager> {
     }
   }
 
+  void setMaxNumberOfCards({required int number}){
+    state = state.copyWith(maxNumberOfCards: number);
+    print('max number of cards is ${state.maxNumberOfCards}');
+  }
+
   void reset({required bool newSession}) {
     state = state.copyWith(
       urls: newSession ? {} : {...state.urls},
@@ -160,7 +169,7 @@ final flashcardProvider =
     FlashcardManager(
       urls: {},
       currentIndex: 0,
-      totalCards: 0,
+      totalNumberOfCards: 0,
       flipCard: {0: false},
       hasHalfFlipped: [],
       cardStage: CardStage.flip,
@@ -170,6 +179,7 @@ final flashcardProvider =
       roundCompleted: false,
       roundIndex: 0,
       sessionCompleted: false,
+      maxNumberOfCards: 10,
     ),
   ),
 );

@@ -1,10 +1,11 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:studychinesetoday/configs/constants.dart';
 import 'package:studychinesetoday/pages/all_topics_page.dart';
-import 'package:studychinesetoday/state_management/simple_providers.dart';
+import 'package:studychinesetoday/state_management/topic_providers.dart';
 import 'package:studychinesetoday/utils/methods.dart';
 import 'package:studychinesetoday/components/home/topic_thumbail.dart';
 
@@ -37,33 +38,46 @@ class TopicsCarousel extends ConsumerWidget {
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(left: size.width * 0.02),
-                      child: Text(
+                      child: AutoSizeText(
                         'Build your vocabulary by topic!',
                         style: Theme.of(context).textTheme.headlineSmall,
+                        maxLines: 1,
+                        minFontSize: 15,
+                        maxFontSize: 20,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const AllTopics()));
-                      },
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: size.width * 0.01,
-                          ),
-                          const Text(
-                            'See all topics',
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            width: size.width * 0.01,
-                          ),
-                          const Icon(Icons.arrow_forward)
-                        ],
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const AllTopics()));
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: size.width * 0.01,
+                            ),
+                            const AutoSizeText(
+                              'See all topics',
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              minFontSize: 8,
+                              maxFontSize: 15,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(
+                              width: size.width * 0.01,
+                            ),
+                            const Padding(
+                                padding: EdgeInsets.only(right: 22),
+                                child: Icon(Icons.arrow_forward, color: Colors.grey,))
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -82,7 +96,10 @@ class TopicsCarousel extends ConsumerWidget {
                       }
                       if (snapshot.hasData) {
                         final topics = snapshot.data!;
-                        ref.read(allTopics).addAll(topics);
+                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                          ref.read(topicProvider.notifier).addTopics(topics: topics);
+                        });
+
                         return Column(
                           children: [
                             Expanded(

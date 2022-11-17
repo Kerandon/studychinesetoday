@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:studychinesetoday/components/home/topics_carousel.dart';
 
@@ -41,10 +42,14 @@ class _HomePageState extends State<HomePage> {
                               alignment: const Alignment(0.4, 0),
                               child: SizedBox(
                                 width: size.width * 0.30,
-                                child: Text(
-                                  'Studying Chinese today couldn\'t be easier - with these handy tools at your fingertips!',
+                                child: AutoSizeText(
+                                  'Studying Chinese today couldn\'t be easier!',
                                   style:
                                       Theme.of(context).textTheme.displayLarge,
+                                  minFontSize: 20,
+                                  maxFontSize: 40,
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ),
