@@ -3,28 +3,30 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/flip_animation.dart';
+import 'package:studychinesetoday/components/home/topic_thumbail.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';
 
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
+import 'package:studychinesetoday/utils/methods.dart';
 
 import '../../animations/slide_animation.dart';
 import '../../configs/app_colors.dart';
 
 import '../../configs/constants.dart';
-import '../../models/topic.dart';
+import '../../models/word.dart';
 import '../../state_management/flashcard_provider.dart';
 
 class Flashcard extends ConsumerWidget {
   const Flashcard({
     super.key,
     required this.index,
-    required this.topic,
+    required this.word,
     this.slideDirection = SlideDirection.none,
     required this.noFlipUI,
   });
 
   final int index;
-  final Topic topic;
+  final Word word;
   final SlideDirection slideDirection;
   final bool noFlipUI;
 
@@ -42,7 +44,7 @@ class Flashcard extends ConsumerWidget {
         ref.read(flashcardProvider.notifier);
 
     bool flipCard = false;
-
+    //
     flashcardManager.flipCard.entries.firstWhere((element) {
       if (element.key == index) {
         if (element.value == true) {
@@ -51,7 +53,7 @@ class Flashcard extends ConsumerWidget {
       }
       return false;
     }, orElse: () => const MapEntry(0, false));
-
+    //
     bool hasFlipped = false;
     for (var f in flashcardManager.hasHalfFlipped) {
       if (f.entries.first.key == index) {
@@ -63,9 +65,9 @@ class Flashcard extends ConsumerWidget {
         }
       }
     }
-    String url = flashcardManager.urls.entries
-        .firstWhere((element) => element.key == topic.english)
-        .value;
+    // String url = flashcardManager.urls.entries
+    //     .firstWhere((element) => element.key == topic.english)
+    //     .value;
 
     Color borderColor = Colors.black12;
     if(slideDirection == SlideDirection.right){
@@ -76,7 +78,10 @@ class Flashcard extends ConsumerWidget {
     }
 
 
-    return FlipAnimation(
+    return
+      //Container(color: Colors.amber, height: 50, width: 50,);
+
+      FlipAnimation(
       animate: flipCard,
       index: index,
       flipCompleted: () {
@@ -107,38 +112,46 @@ class Flashcard extends ConsumerWidget {
                 child: Column(
                   children: [
                     if (!hasFlipped) ...[
-                      Expanded(
-                        flex: 3,
-                        child: Padding(
-                          padding: const EdgeInsets.all(28.0),
-                          child: Image.network(url),
-                        ),
+
+                      DisplayImage(
+
+                        imageFuture: getTopicItemImage(word: word),
+                        returnedURL: (url) {  },
+
                       ),
+
+                      // Expanded(
+                      //   flex: 3,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(28.0),
+                      //     child: Image.network(url),
+                      //   ),
+                      // ),
                       Expanded(
                         child: Center(
-                            child: Text(topic.english,
+                            child: Text(word.english,
                                 style:
                                     Theme.of(context).textTheme.displayMedium)),
                       ),
                     ] else ...[
-                      Expanded(
-                        flex: 3,
-                        child: Padding(
-                          padding: const EdgeInsets.all(28.0),
-                          child: Image.network(url),
-                        ),
-                      ),
+                      // Expanded(
+                      //   flex: 3,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(28.0),
+                      //     child: Image.network(url),
+                      //   ),
+                      // ),
                       Expanded(
                         child: Center(
                           child: Text(
-                            topic.character,
+                            word.character,
                             style: Theme.of(context).textTheme.displayMedium ),
                         ),
                         ),
                       Expanded(
                         child: Align(
                           alignment: Alignment.topCenter,
-                          child: Text(topic.pinyin,
+                          child: Text(word.pinyin,
                               style: Theme.of(context).textTheme.displaySmall),
                         ),
                       ),

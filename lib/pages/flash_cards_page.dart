@@ -7,21 +7,21 @@ import 'package:studychinesetoday/utils/enums/slide_direction.dart';
 import '../components/flashcards/flash_card.dart';
 import '../components/flashcards/side_bar_flashcards.dart';
 import '../models/topic.dart';
+import '../models/word.dart';
 import '../state_management/flashcard_provider.dart';
 
 class FlashcardsPage extends ConsumerStatefulWidget {
-  const FlashcardsPage({required this.words, required this.topic, Key? key})
+  const FlashcardsPage({required this.topic, Key? key})
       : super(key: key);
 
   final Topic topic;
-  final List<Topic> words;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FlashcardsPageState();
 }
 
 class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
-  List<Topic> words = [];
+  List<Word> words = [];
   List<Flashcard> flashcardsUnanswered = [],
       flashcardsCorrect = [],
       flashcardsIncorrect = [];
@@ -32,26 +32,49 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
     final size = MediaQuery.of(context).size;
 
     final FlashcardManager flashcardManager = ref.watch(flashcardProvider);
-    final FlashcardNotifier flashcardNotifier =
-        ref.read(flashcardProvider.notifier);
+    final FlashcardNotifier flashcardNotifier = ref.read(flashcardProvider.notifier);
+
     if (!haveSetUp) {
+
+      print('topic passed in ${widget.topic.english}');
+
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         words.clear();
-        words = flashcardManager.unansweredCards;
 
-        currentIndex = (words.length - 1);
-        for (int i = 0; i < currentIndex + 1; i++) {
-          flashcardsUnanswered.add(
-            Flashcard(
-              index: i,
-              topic: words[i],
-              noFlipUI: false,
-            ),
-          );
+        //flashcardNotifier.setUnansweredWords(words: words);
+
+        print(flashcardManager.unansweredWords.length);
+
+        words = flashcardManager.unansweredWords.toList();
+
+        print('number of words to use ${words.length}');
+
+        for(int i = 0; i < words.length; i++){
+          flashcardsUnanswered.add(Flashcard(index: i, word: words[i], noFlipUI: false));
         }
+
+        currentIndex = words.length - 1;
+
+
+        // currentIndex = (words.length - 1);
+        //
+        // for (int i = 0; i < currentIndex + 1; i++) {
+        //   print(i);
+        //
+        //   // flashcardsUnanswered.add(
+        //   //   Flashcard(
+        //   //     index: i,
+        //   //     topic: words[i],
+        //   //     noFlipUI: false,
+        //   //   ),
+        //   // );
+        // }
 
         flashcardNotifier.setTotalCards(total: currentIndex);
         haveSetUp = true;
@@ -135,7 +158,7 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                                             index: currentIndex,
                                             slideDirection:
                                                 SlideDirection.right,
-                                            topic: words[currentIndex],
+                                            word: words[currentIndex],
                                             noFlipUI: true,
                                           ),
                                         );
@@ -159,7 +182,7 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                                         flashcardsIncorrect.add(Flashcard(
                                             index: currentIndex,
                                             slideDirection: SlideDirection.left,
-                                            topic: words[currentIndex],
+                                            word: words[currentIndex],
                                             noFlipUI: true));
                                         flashcardNotifier.addToIncorrectCards(
                                             card: words[currentIndex]);
@@ -211,12 +234,11 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                               MaterialPageRoute(
                                 builder: (context) => FlashcardsPage(
                                   topic: widget.topic,
-                                  words: flashcardsManager.unansweredCards,
                                 ),
                               ),
                             );
                           },
-                          child: const Text('Replay incorrect cards'),
+                          child: Text('Replay incorrect cards', style: Theme.of(context).textTheme.bodyMedium,),
                         ),
                         ElevatedButton(
                             onPressed: () {
@@ -230,12 +252,11 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                                 MaterialPageRoute(
                                   builder: (context) => FlashcardsPage(
                                     topic: widget.topic,
-                                    words: flashcardsManager.unansweredCards,
                                   ),
                                 ),
                               );
                             },
-                            child: const Text('Replay all cards'))
+                            child: Text('Replay all cards',  style: Theme.of(context).textTheme.bodyMedium))
                       ],
               ));
     });

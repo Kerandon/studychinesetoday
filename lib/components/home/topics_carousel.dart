@@ -16,7 +16,14 @@ class TopicsCarousel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool pageCollapsed = false;
     final size = MediaQuery.of(context).size;
+
+    if (size.width < kCollapseScreenWidth) {
+      pageCollapsed = true;
+    } else {
+      pageCollapsed = false;
+    }
     return SizedBox(
       width: size.width * 0.80,
       height: size.height * 0.60,
@@ -48,39 +55,44 @@ class TopicsCarousel extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const AllTopics()));
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: size.width * 0.01,
+                  pageCollapsed
+                      ? SizedBox()
+                      : SizedBox(
+                          width: size.width * 0.12,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const AllTopics()));
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: size.width * 0.01,
+                                ),
+                                const AutoSizeText(
+                                  'See all topics',
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  minFontSize: 8,
+                                  maxFontSize: 15,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(
+                                  width: size.width * 0.01,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(right: 16),
+                                  child: Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const AutoSizeText(
-                              'See all topics',
-                              textAlign: TextAlign.center,
-                              maxLines: 1,
-                              minFontSize: 8,
-                              maxFontSize: 15,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(
-                              width: size.width * 0.01,
-                            ),
-                            const Padding(
-                                padding: EdgeInsets.only(right: 22),
-                                child: Icon(Icons.arrow_forward, color: Colors.grey,))
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
               SizedBox(
@@ -89,15 +101,18 @@ class TopicsCarousel extends ConsumerWidget {
               Expanded(
                 flex: 4,
                 child: FutureBuilder(
-                    future: getAllTopics(ref: ref),
+                    future: getAllTopics(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return Text('Error !! ${snapshot.error}');
                       }
                       if (snapshot.hasData) {
                         final topics = snapshot.data!;
-                        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                          ref.read(topicProvider.notifier).addTopics(topics: topics);
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((timeStamp) {
+                          ref
+                              .read(topicProvider.notifier)
+                              .addTopics(topics: topics);
                         });
 
                         return Column(
@@ -109,8 +124,8 @@ class TopicsCarousel extends ConsumerWidget {
                                       height: size.height * 0.40,
                                       viewportFraction: 0.30),
                                   items: topics
-                                      .map(
-                                          (topic) => TopicThumbnail(topic: topic))
+                                      .map((topic) =>
+                                          TopicThumbnail(topic: topic))
                                       .toList()),
                             ),
                           ],

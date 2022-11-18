@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LoadingHelper extends ConsumerWidget {
+class LoadingHelper extends StatelessWidget {
   const LoadingHelper(
-      {Key? key, required this.future, required this.onFutureComplete})
+      {Key? key, required this.futures, required this.onFutureComplete})
       : super(key: key);
 
-  final List<Future> future;
-  final Function(List<dynamic>) onFutureComplete;
+  final List<Future<dynamic>> futures;
+  final Function(List<dynamic> data) onFutureComplete;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return FutureBuilder(
       future: Future.wait(
-        future.toList()
+        futures.toList()
       ),
       builder: (BuildContext context, dynamic snapshot) {
         if (snapshot.hasData) {
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            onFutureComplete.call(snapshot.data!);
-          });
+
+              onFutureComplete.call(snapshot.data!);
+              Navigator.of(context).maybePop();
+
+
         }
         if (snapshot.hasError) {
           return Text('Error ${snapshot.error}');

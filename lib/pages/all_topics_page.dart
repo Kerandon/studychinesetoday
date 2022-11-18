@@ -30,7 +30,10 @@ class AllTopics extends ConsumerWidget {
                   children: topics
                       .map((e) => TopicThumbnail(
                           topic: topics.firstWhere((element) =>
-                              element.english == topics.first.english)))
+                              element.english == topics.first.english)
+
+                  ),
+                  )
                       .toList(),
                 ),
               ),

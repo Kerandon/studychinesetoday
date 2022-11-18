@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/state_management/flashcard_provider.dart';
-
 import '../../models/topic.dart';
+import '../../pages/flash_cards_page.dart';
 import '../../state_management/topic_providers.dart';
 import '../../utils/methods.dart';
 import '../forms/custom_form_chips.dart';
@@ -105,11 +105,15 @@ class FlashcardsSettingsState extends ConsumerState<FlashcardsSettings> {
                   if (isValidated == true) {
 
                     final int number = _formKey.currentState!.fields['number']?.value;
+                    final Topic topic = _formKey.currentState!.fields['topic']?.value;
 
                     print(_formKey.currentState!.fields['number']?.value);
                     print(_formKey.currentState!.fields['display']?.value);
                     print(_formKey.currentState!.fields['topic']?.value);
                     ref.read(flashcardProvider.notifier).setMaxNumberOfCards(number: number);
+
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>
+                        FlashcardsPage(topic: topic,)));
                   }
                 },
                 style: ElevatedButton.styleFrom(

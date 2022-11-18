@@ -9,6 +9,7 @@ import 'package:studychinesetoday/utils/methods.dart';
 import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
 import '../../models/topic.dart';
+import '../../models/word.dart';
 import '../app/loading_helper.dart';
 
 class ActivityThumbnail extends ConsumerWidget {
@@ -46,25 +47,28 @@ class ActivityThumbnail extends ConsumerWidget {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, __, ___) => LoadingHelper(
-                      future: [
+                      futures: [
+
                         FirebaseFirestore.instance
                             .collection(kTopics)
                             .doc(topic.english)
                             .get(),
                         getAllTopicItemsUrls(topic: topic)
+
                       ],
                       onFutureComplete: (data) {
-                        List<Topic> cards = [];
+
+
+                        List<Word> cards = [];
                         final document =
                             data[0] as DocumentSnapshot<Map<String, dynamic>>;
                         for (var d in document.data()!.entries) {
                           if (d.key != 'topicdata') {
-                            cards.add(Topic.fromMap(mapEntry: d));
+                            cards.add(Word.fromMap(topic: topic, mapEntry: d));
                           }
                         }
 
                         final provider = ref.read(flashcardProvider.notifier);
-                        provider.setURLs(urls: data[1]);
                         provider.setWords(
                             sessionType: SessionType.newSession, cards: cards);
 
@@ -72,7 +76,6 @@ class ActivityThumbnail extends ConsumerWidget {
                           MaterialPageRoute(
                             builder: (context) => FlashcardsPage(
                               topic: topic,
-                              words: const [],
                             ),
                           ),
                         );
