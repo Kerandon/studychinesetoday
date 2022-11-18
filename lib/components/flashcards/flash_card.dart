@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/flip_animation.dart';
-import 'package:studychinesetoday/components/home/topic_thumbail.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';
 
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
@@ -15,6 +14,7 @@ import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
 import '../../models/word.dart';
 import '../../state_management/flashcard_provider.dart';
+import '../app/display_image.dart';
 
 class Flashcard extends ConsumerWidget {
   const Flashcard({

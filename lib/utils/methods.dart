@@ -1,10 +1,7 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'package:studychinesetoday/configs/constants.dart';
-
 import '../models/topic.dart';
 import '../models/word.dart';
 
@@ -50,6 +47,8 @@ Future<String> getTopicItemImage({required Word word}) async {
 }
 
 
-Future<DocumentSnapshot<Map<String, dynamic>>> getAllTopicItems({required Topic topic}) async {
-  return await FirebaseFirestore.instance.collection(kTopics).doc(topic.english).get();
+Future<List<MapEntry<String, dynamic>>> getAllTopicItems({required Topic topic}) async {
+  final doc = await FirebaseFirestore.instance.collection(kTopics).doc(topic.english).get();
+  return doc.data()!.entries.where((element) => element.key != kTopicData).toList();
+
 }

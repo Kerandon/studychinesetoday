@@ -42,18 +42,10 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
 
     if (!haveSetUp) {
 
-      print('topic passed in ${widget.topic.english}');
 
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         words.clear();
-
-        //flashcardNotifier.setUnansweredWords(words: words);
-
-        print(flashcardManager.unansweredWords.length);
-
         words = flashcardManager.unansweredWords.toList();
-
-        print('number of words to use ${words.length}');
 
         for(int i = 0; i < words.length; i++){
           flashcardsUnanswered.add(Flashcard(index: i, word: words[i], noFlipUI: false));
@@ -61,20 +53,6 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
 
         currentIndex = words.length - 1;
 
-
-        // currentIndex = (words.length - 1);
-        //
-        // for (int i = 0; i < currentIndex + 1; i++) {
-        //   print(i);
-        //
-        //   // flashcardsUnanswered.add(
-        //   //   Flashcard(
-        //   //     index: i,
-        //   //     topic: words[i],
-        //   //     noFlipUI: false,
-        //   //   ),
-        //   // );
-        // }
 
         flashcardNotifier.setTotalCards(total: currentIndex);
         haveSetUp = true;

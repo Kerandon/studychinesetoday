@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class DisplayImage extends ConsumerWidget {
   const DisplayImage({
@@ -20,10 +21,9 @@ class DisplayImage extends ConsumerWidget {
         child: cachedURL == null
             ? FutureBuilder(
           future: imageFuture,
-          //getThumbnailURL(topic: topic),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Icon(Icons.person, size: 50, color: Colors.black12,);
+              return const Icon(Icons.person, size: 50, color: Colors.black12,);
             }
             if (snapshot.hasData) {
               returnedURL.call(snapshot.data);

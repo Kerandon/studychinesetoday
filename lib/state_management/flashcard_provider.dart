@@ -76,9 +76,7 @@ class FlashcardNotifier extends StateNotifier<FlashcardManager> {
 
   void setUnansweredWords({required List<Word> words}) {
     words.shuffle();
-    print('words passed in ${words.length}');
     state = state.copyWith(unansweredWords: words);
-    print('unanswered words is ----- ${state.unansweredWords.length}');
   }
 
   void setCurrentIndex({required int total}) {
@@ -145,7 +143,6 @@ class FlashcardNotifier extends StateNotifier<FlashcardManager> {
 
   void setMaxNumberOfCards({required int number}){
     state = state.copyWith(maxNumberOfCards: number);
-    print('max number of cards is ${state.maxNumberOfCards}');
   }
 
   void reset({required bool newSession}) {

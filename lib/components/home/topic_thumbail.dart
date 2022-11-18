@@ -8,6 +8,7 @@ import 'package:studychinesetoday/utils/methods.dart';
 import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
 import '../../models/topic.dart';
+import '../app/display_image.dart';
 
 class TopicThumbnail extends ConsumerWidget {
   const TopicThumbnail({

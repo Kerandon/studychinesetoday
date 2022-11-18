@@ -56,7 +56,7 @@ class TopicsCarousel extends ConsumerWidget {
                     ),
                   ),
                   pageCollapsed
-                      ? SizedBox()
+                      ? const SizedBox()
                       : SizedBox(
                           width: size.width * 0.12,
                           child: InkWell(
@@ -81,7 +81,7 @@ class TopicsCarousel extends ConsumerWidget {
                                 SizedBox(
                                   width: size.width * 0.01,
                                 ),
-                                Padding(
+                                const Padding(
                                   padding: EdgeInsets.only(right: 16),
                                   child: Icon(
                                     Icons.arrow_forward,
