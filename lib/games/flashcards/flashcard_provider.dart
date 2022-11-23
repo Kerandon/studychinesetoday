@@ -1,22 +1,23 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
-import '../models/word.dart';
-import '../utils/enums/card_stages.dart';
+import 'flash_card.dart';
+import '../../models/word_data.dart';
+import '../../utils/enums/card_stages.dart';
 
 class FlashcardManager {
   final int currentIndex;
   final int totalCards;
   final Map<String, String> urls;
   final Map<int, bool> flipCard;
-  final List<Map<int, bool>> hasHalfFlipped;
-  final List<Word> unansweredWords;
-  final List<Word> correctWords;
-  final List<Word> incorrectWords;
+  final Set<Map<int, bool>> hasHalfFlipped;
+  final Set<WordData> unansweredWords;
+  final Set<WordData> correctWords;
+  final Set<WordData> incorrectWords;
   final CardStage cardStage;
   final bool roundCompleted;
   final int roundIndex;
   final bool sessionCompleted;
-  final int maxNumberOfCards;
+  final int preferredNumberOfCards;
 
   FlashcardManager({
     required this.currentIndex,
@@ -31,7 +32,7 @@ class FlashcardManager {
     required this.roundCompleted,
     required this.roundIndex,
     required this.sessionCompleted,
-    required this.maxNumberOfCards,
+    required this.preferredNumberOfCards,
   });
 
   FlashcardManager copyWith({
@@ -39,15 +40,15 @@ class FlashcardManager {
     int? totalCards,
     Map<String, String>? urls,
     Map<int, bool>? flipCard,
-    List<Map<int, bool>>? hasHalfFlipped,
+    Set<Map<int, bool>>? hasHalfFlipped,
     CardStage? cardStage,
-    List<Word>? unansweredWords,
-    List<Word>? correctWords,
-    List<Word>? incorrectWords,
+    Set<WordData>? unansweredWords,
+    Set<WordData>? correctWords,
+    Set<WordData>? incorrectWords,
     bool? roundCompleted,
     int? roundIndex,
     bool? sessionCompleted,
-    int? maxNumberOfCards,
+    int? preferredNumberOfCards,
   }) {
     return FlashcardManager(
       currentIndex: currentIndex ?? this.currentIndex,
@@ -62,7 +63,8 @@ class FlashcardManager {
       roundCompleted: roundCompleted ?? this.roundCompleted,
       roundIndex: roundIndex ?? this.roundIndex,
       sessionCompleted: sessionCompleted ?? this.sessionCompleted,
-      maxNumberOfCards: maxNumberOfCards ?? this.maxNumberOfCards,
+      preferredNumberOfCards:
+          preferredNumberOfCards ?? this.preferredNumberOfCards,
     );
   }
 }
@@ -70,13 +72,15 @@ class FlashcardManager {
 class FlashcardNotifier extends StateNotifier<FlashcardManager> {
   FlashcardNotifier(FlashcardManager state) : super(state);
 
-  void setURLs({required Map<String, String> urls}){
+  void setURLs({required Map<String, String> urls}) {
     state = state.copyWith(urls: urls);
   }
 
-  void setUnansweredWords({required List<Word> words}) {
-    words.shuffle();
-    state = state.copyWith(unansweredWords: words);
+  void setUnansweredWords({required Set<WordData> words}) {
+    var shuffleWords = words.toList();
+    shuffleWords = shuffleWords..shuffle();
+
+    state = state.copyWith(unansweredWords: shuffleWords.toSet());
   }
 
   void setCurrentIndex({required int total}) {
@@ -98,29 +102,25 @@ class FlashcardNotifier extends StateNotifier<FlashcardManager> {
     state = state.copyWith(currentIndex: state.currentIndex - 1);
   }
 
-  void totalCards({required int total}) {
-    state = state.copyWith(totalCards: total);
-  }
-
   void setFlip({required Map<int, bool> flip}) {
     state = state.copyWith(flipCard: flip);
   }
 
   void setHasHalfFlipped({required Map<int, bool> halfFlipped}) {
     state =
-        state.copyWith(hasHalfFlipped: [...state.hasHalfFlipped, halfFlipped]);
+        state.copyWith(hasHalfFlipped: {...state.hasHalfFlipped, halfFlipped});
   }
 
   void setCardState({required CardStage stage}) {
     state = state.copyWith(cardStage: stage);
   }
 
-  void addToCorrectCards({required Word card}) {
-    state = state.copyWith(correctWords: [...state.correctWords, card]);
+  void addToCorrectCards({required WordData card}) {
+    state = state.copyWith(correctWords: {...state.correctWords, card});
   }
 
-  void addToIncorrectCards({required Word card}) {
-    state = state.copyWith(incorrectWords: [...state.incorrectWords, card]);
+  void addToIncorrectCards({required WordData card}) {
+    state = state.copyWith(incorrectWords: {...state.incorrectWords, card});
   }
 
   void setRoundCompleted({required bool completed}) {
@@ -128,21 +128,23 @@ class FlashcardNotifier extends StateNotifier<FlashcardManager> {
   }
 
   void setWords(
-      {required SessionType sessionType, List<Word> cards = const []}) {
-    state = state.copyWith(unansweredWords: []);
+      {required SessionType sessionType, Set<WordData> cards = const {}}) {
+    state = state.copyWith(unansweredWords: {});
     if (sessionType == SessionType.newSession) {
       if (cards.isEmpty) {}
       state = state.copyWith(unansweredWords: cards);
     } else if (sessionType == SessionType.repeatIncorrect) {
-      state = state.copyWith(unansweredWords: [...state.incorrectWords]);
+      state = state.copyWith(unansweredWords: {...state.incorrectWords});
     } else if (sessionType == SessionType.repeatIncorrect) {
       state = state.copyWith(
-          unansweredWords: [...state.incorrectWords, ...state.correctWords]);
+          unansweredWords: {...state.incorrectWords, ...state.correctWords});
     }
   }
 
-  void setMaxNumberOfCards({required int number}){
-    state = state.copyWith(maxNumberOfCards: number);
+  void setPreferredNumberOfCards({required int number}) {
+    if (number > 0) {
+      state = state.copyWith(preferredNumberOfCards: number);
+    }
   }
 
   void reset({required bool newSession}) {
@@ -151,11 +153,11 @@ class FlashcardNotifier extends StateNotifier<FlashcardManager> {
       currentIndex: 0,
       totalCards: 0,
       flipCard: {0: false},
-      hasHalfFlipped: [],
+      hasHalfFlipped: {},
       cardStage: CardStage.flip,
-      unansweredWords: newSession ? [] : [...state.unansweredWords],
-      correctWords: [],
-      incorrectWords: [],
+      unansweredWords: newSession ? {} : {...state.unansweredWords},
+      correctWords: {},
+      incorrectWords: {},
       roundCompleted: false,
       roundIndex: newSession ? 0 : state.roundIndex,
       sessionCompleted: false,
@@ -171,15 +173,15 @@ final flashcardProvider =
       currentIndex: 0,
       totalCards: 0,
       flipCard: {0: false},
-      hasHalfFlipped: [],
+      hasHalfFlipped: {},
       cardStage: CardStage.flip,
-      unansweredWords: [],
-      correctWords: [],
-      incorrectWords: [],
+      unansweredWords: {},
+      correctWords: {},
+      incorrectWords: {},
       roundCompleted: false,
       roundIndex: 0,
       sessionCompleted: false,
-      maxNumberOfCards: 3,
+      preferredNumberOfCards: 10,
     ),
   ),
 );

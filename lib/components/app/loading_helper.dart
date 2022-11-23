@@ -6,7 +6,7 @@ class LoadingHelper extends StatelessWidget {
       : super(key: key);
 
   final List<Future<dynamic>> futures;
-  final Function(List<dynamic> data) onFutureComplete;
+  final Function(dynamic data) onFutureComplete;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class LoadingHelper extends StatelessWidget {
       future: Future.wait(
         futures.toList()
       ),
-      builder: (BuildContext context, dynamic snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData) {
 
               onFutureComplete.call(snapshot.data!);

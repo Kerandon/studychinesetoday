@@ -2,17 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/state_management/flashcard_provider.dart';
+import 'package:studychinesetoday/games/flashcards/flashcard_provider.dart';
 
 class FlipAnimation extends ConsumerStatefulWidget {
-  const FlipAnimation(
-      {Key? key,
-      required this.child,
-      required this.index,
-      required this.animate,
-      this.flipCompleted,
-      })
-      : super(key: key);
+  const FlipAnimation({
+    Key? key,
+    required this.child,
+    required this.index,
+    required this.animate,
+    this.flipCompleted,
+  }) : super(key: key);
 
   final Widget child;
   final int index;
@@ -37,13 +36,13 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
       duration: const Duration(milliseconds: 900),
       vsync: this,
     )..addStatusListener((status) {
-      if(status == AnimationStatus.completed) {
-        widget.flipCompleted?.call();
-      }
-    });
+        if (status == AnimationStatus.completed) {
+          widget.flipCompleted?.call();
+        }
+      });
 
     _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
 
@@ -71,8 +70,8 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
           if (!_notifiedHasFlipped) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               ref
-                  .read(flashcardProvider.notifier).setHasHalfFlipped(
-                  halfFlipped: {widget.index: true});
+                  .read(flashcardProvider.notifier)
+                  .setHasHalfFlipped(halfFlipped: {widget.index: true});
               _notifiedHasFlipped = true;
             });
           }

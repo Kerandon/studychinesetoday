@@ -2,29 +2,41 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/pages/topic_page.dart';
-import 'package:studychinesetoday/state_management/topic_providers.dart';
 import 'package:studychinesetoday/utils/methods.dart';
 
 import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
-import '../../models/topic.dart';
+import '../../models/topic_data.dart';
 import '../app/display_image.dart';
 
-class TopicThumbnail extends ConsumerWidget {
+class TopicThumbnail extends ConsumerStatefulWidget {
   const TopicThumbnail({
     super.key,
     required this.topic,
   });
 
-  final Topic topic;
+  final TopicData topic;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TopicThumbnail> createState() => _TopicThumbnailState();
+}
+
+class _TopicThumbnailState extends ConsumerState<TopicThumbnail> {
+
+  late final Future<String> _futureImage;
+
+  @override
+  void initState() {
+    _futureImage = getRandomTopicURL(topic: widget.topic);
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
-        width: 250,
-        height: 250,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(kRadius),
             color: AppColors.offWhite,
@@ -34,7 +46,7 @@ class TopicThumbnail extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 1),
               child: Text(
-                topic.english,
+                widget.topic.english,
                 style: Theme.of(context)
                     .textTheme
                     .headlineSmall
@@ -47,12 +59,12 @@ class TopicThumbnail extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${topic.character} ',
+                    '${widget.topic.character} ',
                     style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Colors.grey, overflow: TextOverflow.ellipsis),
                   ),
                   Text(
-                    ' ${topic.pinyin}',
+                    ' ${widget.topic.pinyin}',
                     style: Theme.of(context).textTheme.displaySmall!.copyWith(
                         color: Colors.grey, overflow: TextOverflow.ellipsis),
                   ),
@@ -62,13 +74,11 @@ class TopicThumbnail extends ConsumerWidget {
             Expanded(
               flex: 5,
               child: DisplayImage(
-                imageFuture: getThumbnailURL(topic: topic),
+                imageFuture: _futureImage,
                 returnedURL: (url) {
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    ref.read(topicProvider.notifier).addTopics(topics: {topic});
-                  });
+
                 },
-               cachedURL: topic.url,
+               cachedURL: widget.topic.url,
               ),
             ),
             Expanded(
@@ -81,7 +91,7 @@ class TopicThumbnail extends ConsumerWidget {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => TopicPage(topic: topic),
+                            builder: (context) => TopicPage(topic: widget.topic),
                           ),
                         );
                       },

@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/pages/flash_cards_page.dart';
-import 'package:studychinesetoday/state_management/flashcard_provider.dart';
+import 'package:studychinesetoday/games/flashcards/flash_cards_page.dart';
+import 'package:studychinesetoday/games/flashcards/flashcard_provider.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
-import 'package:studychinesetoday/utils/methods.dart';
+
 
 import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
-import '../../models/topic.dart';
-import '../../models/word.dart';
+import '../../models/topic_data.dart';
+import '../../models/word_data.dart';
 import '../app/loading_helper.dart';
 
 class ActivityThumbnail extends ConsumerWidget {
@@ -18,7 +18,7 @@ class ActivityThumbnail extends ConsumerWidget {
     required this.topic,
   });
 
-  final Topic topic;
+  final TopicData topic;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,18 +53,17 @@ class ActivityThumbnail extends ConsumerWidget {
                             .collection(kTopics)
                             .doc(topic.english)
                             .get(),
-                        getAllTopicItemsUrls(topic: topic)
 
                       ],
                       onFutureComplete: (data) {
 
 
-                        List<Word> cards = [];
+                        Set<WordData> cards = {};
                         final document =
                             data[0] as DocumentSnapshot<Map<String, dynamic>>;
                         for (var d in document.data()!.entries) {
                           if (d.key != 'topicdata') {
-                            cards.add(Word.fromMap(topic: topic, mapEntry: d));
+                           // cards.add(Word.fromMap(topic: topic, mapEntry: d));
                           }
                         }
 
@@ -74,8 +73,7 @@ class ActivityThumbnail extends ConsumerWidget {
 
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => FlashcardsPage(
-                              topic: topic,
+                            builder: (context) => const FlashcardsPage(
                             ),
                           ),
                         );

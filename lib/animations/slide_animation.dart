@@ -31,15 +31,15 @@ class _SlideAnimationState extends State<SlideAnimation>
 
   @override
   void initState() {
-    _randomOffsetSlide = Random().nextInt(5) * 0.010;
+    _randomOffsetSlide = Random().nextInt(5) * 0.005;
     final isNegative = Random().nextBool();
     if (isNegative) {
-      _randomOffsetSlide *= -1.020;
+      _randomOffsetSlide *= -1.010;
     }
 
     super.initState();
     _controller = AnimationController(
-        duration: const Duration(milliseconds: 900), vsync: this)
+        duration: const Duration(milliseconds: 700), vsync: this)
       ..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) {
@@ -51,7 +51,7 @@ class _SlideAnimationState extends State<SlideAnimation>
       _controller.forward();
     }
 
-    double endTurn = Random().nextInt(10) * 0.0003;
+    double endTurn = Random().nextInt(10) * 0.0002;
     if (Random().nextBool()) {
       endTurn *= -1.0;
     }
@@ -77,14 +77,14 @@ class _SlideAnimationState extends State<SlideAnimation>
     } else {
       switch (widget.slideDirection) {
         case SlideDirection.left:
-          endOffset = const Offset(1, 0);
+          endOffset = const Offset(0.80, 0);
 
           endOffset = Offset(endOffset.dx + _randomOffsetSlide,
               endOffset.dy + _randomOffsetSlide);
           finalEndOffset = endOffset;
           break;
         case SlideDirection.right:
-          endOffset = const Offset(-1, 0);
+          endOffset = const Offset(-0.80, 0);
           finalEndOffset = endOffset;
           break;
         case SlideDirection.none:

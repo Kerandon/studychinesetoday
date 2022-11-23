@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:studychinesetoday/components/topic/activity_thumbnail.dart';
-import '../models/topic.dart';
+import '../models/topic_data.dart';
 
 class TopicPage extends StatelessWidget {
   const TopicPage({Key? key, required this.topic}) : super(key: key);
 
-  final Topic topic;
+  final TopicData topic;
 
   @override
   Widget build(BuildContext context) {

@@ -1,22 +1,18 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/flip_animation.dart';
+import 'package:studychinesetoday/components/app/display_image.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';
-
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
 import 'package:studychinesetoday/utils/methods.dart';
-
 import '../../animations/slide_animation.dart';
 import '../../configs/app_colors.dart';
-
 import '../../configs/constants.dart';
-import '../../models/word.dart';
-import '../../state_management/flashcard_provider.dart';
-import '../app/display_image.dart';
+import '../../models/word_data.dart';
+import 'flashcard_provider.dart';
 
-class Flashcard extends ConsumerWidget {
+class Flashcard extends ConsumerStatefulWidget {
   const Flashcard({
     super.key,
     required this.index,
@@ -26,27 +22,42 @@ class Flashcard extends ConsumerWidget {
   });
 
   final int index;
-  final Word word;
+  final WordData word;
   final SlideDirection slideDirection;
   final bool noFlipUI;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<Flashcard> createState() => _FlashcardState();
+}
+
+class _FlashcardState extends ConsumerState<Flashcard> {
+  late final Future<String> _futureImage;
+
+  @override
+  void initState() {
+    _futureImage = getWordURL(topic: widget.word.topicData!, word: widget.word);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     double flipCardRadians = 0;
 
     final size = MediaQuery.of(context).size;
 
-    double xAlignment = index / 120 * -1;
-    double yAlignment = index / 80 * 1;
+    double indexMultiplier = 300;
+
+    double xAlignment = widget.index / indexMultiplier * -1;
+    double yAlignment = widget.index / indexMultiplier * 1;
 
     final FlashcardManager flashcardManager = ref.watch(flashcardProvider);
     final FlashcardNotifier flashcardNotifier =
         ref.read(flashcardProvider.notifier);
 
     bool flipCard = false;
-    //
+
     flashcardManager.flipCard.entries.firstWhere((element) {
-      if (element.key == index) {
+      if (element.key == widget.index) {
         if (element.value == true) {
           flipCard = true;
         }
@@ -56,42 +67,35 @@ class Flashcard extends ConsumerWidget {
     //
     bool hasFlipped = false;
     for (var f in flashcardManager.hasHalfFlipped) {
-      if (f.entries.first.key == index) {
+      if (f.entries.first.key == widget.index) {
         hasFlipped = f.entries.first.value;
         if (hasFlipped) {
-          if (!noFlipUI) {
+          if (!widget.noFlipUI) {
             flipCardRadians = pi;
           }
         }
       }
     }
-    // String url = flashcardManager.urls.entries
-    //     .firstWhere((element) => element.key == topic.english)
-    //     .value;
 
     Color borderColor = Colors.black12;
-    if(slideDirection == SlideDirection.right){
+    if (widget.slideDirection == SlideDirection.right) {
       borderColor = Colors.green;
     }
-    if(slideDirection == SlideDirection.left){
+    if (widget.slideDirection == SlideDirection.left) {
       borderColor = Colors.red;
     }
 
-
-    return
-      //Container(color: Colors.amber, height: 50, width: 50,);
-
-      FlipAnimation(
+    return FlipAnimation(
       animate: flipCard,
-      index: index,
+      index: widget.index,
       flipCompleted: () {
         flashcardNotifier.setCardState(stage: CardStage.swipe);
       },
       child: SlideAnimation(
-        animate: slideDirection != SlideDirection.none,
-        slideDirection: slideDirection,
+        animate: widget.slideDirection != SlideDirection.none,
+        slideDirection: widget.slideDirection,
         slideCompleted: () {
-          flashcardNotifier.setFlip(flip: {index: false});
+          flashcardNotifier.setFlip(flip: {widget.index: false});
           flashcardNotifier.setCardState(stage: CardStage.flip);
         },
         child: Transform(
@@ -112,46 +116,30 @@ class Flashcard extends ConsumerWidget {
                 child: Column(
                   children: [
                     if (!hasFlipped) ...[
-
-                      DisplayImage(
-
-                        imageFuture: getTopicItemImage(word: word),
-                        returnedURL: (url) {  },
-
+                      Expanded(
+                        child: DisplayImage(
+                          imageFuture: _futureImage,
+                          returnedURL: (data) {},
+                        ),
                       ),
-
-                      // Expanded(
-                      //   flex: 3,
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(28.0),
-                      //     child: Image.network(url),
-                      //   ),
-                      // ),
                       Expanded(
                         child: Center(
-                            child: Text(word.english,
+                            child: Text(
+                                '${widget.index} ${widget.word.english}',
                                 style:
                                     Theme.of(context).textTheme.displayMedium)),
                       ),
                     ] else ...[
-                      // Expanded(
-                      //   flex: 3,
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(28.0),
-                      //     child: Image.network(url),
-                      //   ),
-                      // ),
                       Expanded(
                         child: Center(
-                          child: Text(
-                            word.character,
-                            style: Theme.of(context).textTheme.displayMedium ),
+                          child: Text(widget.word.character,
+                              style: Theme.of(context).textTheme.displayMedium),
                         ),
-                        ),
+                      ),
                       Expanded(
                         child: Align(
                           alignment: Alignment.topCenter,
-                          child: Text(word.pinyin,
+                          child: Text(widget.word.pinyin,
                               style: Theme.of(context).textTheme.displaySmall),
                         ),
                       ),

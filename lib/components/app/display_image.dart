@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class DisplayImage extends ConsumerWidget {
+
+class DisplayImage extends ConsumerStatefulWidget {
   const DisplayImage({
     super.key,
     required this.imageFuture,
@@ -15,24 +16,38 @@ class DisplayImage extends ConsumerWidget {
   final String? cachedURL;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DisplayImage> createState() => _DisplayImageState();
+}
+
+class _DisplayImageState extends ConsumerState<DisplayImage> {
+
+ // late final _futureImage;
+
+  @override
+  void initState() {
+    // _futureImage =
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.all(8),
-        child: cachedURL == null
+        child: widget.cachedURL == null
             ? FutureBuilder(
-          future: imageFuture,
+          future: widget.imageFuture,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Icon(Icons.person, size: 50, color: Colors.black12,);
             }
             if (snapshot.hasData) {
-              returnedURL.call(snapshot.data);
+              widget.returnedURL.call(snapshot.data);
               return BuildImage(url: snapshot.data);
             }
             return const Center(child: CircularProgressIndicator());
           },
         )
-            : BuildImage(url: cachedURL!));
+            : BuildImage(url: widget.cachedURL!));
   }
 }
 

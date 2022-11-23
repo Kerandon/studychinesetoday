@@ -1,61 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/pages/topic_page.dart';
+import 'package:studychinesetoday/configs/constants.dart';
+import 'package:studychinesetoday/pages/home_page.dart';
+import 'package:studychinesetoday/state_management/topics_data.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
-import '../components/flashcards/flash_card.dart';
-import '../components/flashcards/side_bar_flashcards.dart';
-import '../models/topic.dart';
-import '../models/word.dart';
-import '../state_management/flashcard_provider.dart';
+import 'flash_card.dart';
+import 'side_bar_flashcards.dart';
+import '../../models/topic_data.dart';
+import '../../models/word_data.dart';
+import 'flashcard_provider.dart';
 
 class FlashcardsPage extends ConsumerStatefulWidget {
-  const FlashcardsPage({required this.topic, Key? key})
-      : super(key: key);
-
-  final Topic topic;
+  const FlashcardsPage({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _FlashcardsPageState();
 }
 
 class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
-  List<Word> words = [];
-  List<Flashcard> flashcardsUnanswered = [],
-      flashcardsCorrect = [],
-      flashcardsIncorrect = [];
+  Set<WordData> words = {};
+  Set<Flashcard> flashcardsUnanswered = {},
+      flashcardsCorrect = {},
+      flashcardsIncorrect = {};
 
   late int currentIndex;
   CardStage cardStage = CardStage.flip;
-  bool haveSetUp = false;
+  bool _haveSetUp = false;
+  int preferredNumberCards = 0;
 
   @override
   Widget build(BuildContext context) {
-
-
-
     final size = MediaQuery.of(context).size;
-
     final FlashcardManager flashcardManager = ref.watch(flashcardProvider);
-    final FlashcardNotifier flashcardNotifier = ref.read(flashcardProvider.notifier);
+    final FlashcardNotifier flashcardNotifier =
+        ref.read(flashcardProvider.notifier);
+    final TopicsDataState topicsDataState = ref.read(topicsDataProvider);
 
-    if (!haveSetUp) {
-
-
+    if (!_haveSetUp) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        words.clear();
-        words = flashcardManager.unansweredWords.toList();
+        if (flashcardManager.roundIndex == 0) {
+          Set<TopicData> topicData = topicsDataState.allTopicsData;
 
-        for(int i = 0; i < words.length; i++){
-          flashcardsUnanswered.add(Flashcard(index: i, word: words[i], noFlipUI: false));
+          for (var t in topicData) {
+            for (var w in t.words!) {
+              if (w.english != kTopicData) {
+                words.add(WordData(
+                    english: w.english,
+                    character: w.character,
+                    pinyin: w.pinyin,
+                    topicData: TopicData(english: t.english, character: t.character, pinyin: t.pinyin)
+                ),
+                );
+              }
+            }
+          }
+
+          flashcardNotifier.setUnansweredWords(words: words);
+        } else {
+          words = flashcardManager.unansweredWords.toSet();
+        }
+
+        words = words.take(100).toSet();
+        words = words..toList().shuffle();
+
+        for (int i = 0; i < words.length; i++) {
+          flashcardsUnanswered.add(
+              Flashcard(index: i, word: words.elementAt(i), noFlipUI: false));
         }
 
         currentIndex = words.length - 1;
 
-
         flashcardNotifier.setTotalCards(total: currentIndex);
-        haveSetUp = true;
+
+        _haveSetUp = true;
       });
     }
 
@@ -72,11 +91,7 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => TopicPage(
-                  topic: widget.topic,
-                ),
-              ),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           },
           icon: const Icon(Icons.arrow_back),
@@ -136,14 +151,16 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                                             index: currentIndex,
                                             slideDirection:
                                                 SlideDirection.right,
-                                            word: words[currentIndex],
+                                            word: words.elementAt(currentIndex),
                                             noFlipUI: true,
                                           ),
                                         );
                                         flashcardNotifier.addToCorrectCards(
-                                            card: words[currentIndex]);
-                                        flashcardsUnanswered
-                                            .removeAt(currentIndex);
+                                          card: words.elementAt(currentIndex),
+                                        );
+                                        flashcardsUnanswered.removeWhere(
+                                            (element) =>
+                                                element.index == currentIndex);
                                         currentIndex--;
                                         flashcardNotifier.setCurrentIndex(
                                             total: currentIndex);
@@ -160,13 +177,17 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                                         flashcardsIncorrect.add(Flashcard(
                                             index: currentIndex,
                                             slideDirection: SlideDirection.left,
-                                            word: words[currentIndex],
+                                            word: words.elementAt(currentIndex),
                                             noFlipUI: true));
+
                                         flashcardNotifier.addToIncorrectCards(
-                                            card: words[currentIndex]);
-                                        flashcardsUnanswered
-                                            .removeAt(currentIndex);
+                                          card: words.elementAt(0),
+                                        );
+                                        flashcardsUnanswered.removeWhere(
+                                            (element) =>
+                                                element.index == currentIndex);
                                         currentIndex--;
+
                                         flashcardNotifier.setCurrentIndex(
                                             total: currentIndex);
                                         setState(() {});
@@ -210,13 +231,14 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => FlashcardsPage(
-                                  topic: widget.topic,
-                                ),
+                                builder: (context) => const FlashcardsPage(),
                               ),
                             );
                           },
-                          child: Text('Replay incorrect cards', style: Theme.of(context).textTheme.bodyMedium,),
+                          child: Text(
+                            'Replay incorrect cards',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
                         ),
                         ElevatedButton(
                             onPressed: () {
@@ -228,15 +250,14 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => FlashcardsPage(
-                                    topic: widget.topic,
-                                  ),
+                                  builder: (context) => const FlashcardsPage(),
                                 ),
                               );
                             },
-                            child: Text('Replay all cards',  style: Theme.of(context).textTheme.bodyMedium))
+                            child: Text('Replay all cards',
+                                style: Theme.of(context).textTheme.bodyMedium))
                       ],
-              ));
-    });
+              ),);
+    },);
   }
 }
