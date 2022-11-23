@@ -5,7 +5,7 @@ import 'package:studychinesetoday/state_management/topics_data.dart';
 
 import '../../../models/word_data.dart';
 import '../../../utils/methods.dart';
-import 'grid_content.dart';
+import '../../games/memory/grid_content.dart';
 import 'memory_provider.dart';
 import 'memory_word.dart';
 

@@ -1,14 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'package:studychinesetoday/components/home/topics_carousel.dart';
 import 'package:studychinesetoday/configs/app_colors.dart';
 import 'package:studychinesetoday/state_management/topics_data.dart';
 import 'package:studychinesetoday/utils/methods.dart';
 
-import '../gamesll/memory/flashcards/flashcards_button.dart';
-import '../gamesll/memory/memory_page.dart';
+import '../games/flashcards/flashcards_button.dart';
+import '../games/memory/memory_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);

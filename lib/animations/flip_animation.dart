@@ -1,9 +1,7 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import '../sections/gamesll/memory/flashcards/flashcard_provider.dart';
+import '../sections/games/flashcards/flashcard_provider.dart';
 
 class FlipAnimation extends ConsumerStatefulWidget {
   const FlipAnimation({

@@ -2,14 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
-
-
 import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
 import '../../models/topic_data.dart';
 import '../../models/word_data.dart';
-import '../../sections/gamesll/memory/flashcards/flash_cards_page.dart';
-import '../../sections/gamesll/memory/flashcards/flashcard_provider.dart';
+import '../../sections/games/flashcards/flash_cards_page.dart';
+import '../../sections/games/flashcards/flashcard_provider.dart';
 import '../app/loading_helper.dart';
 
 class ActivityThumbnail extends ConsumerWidget {
