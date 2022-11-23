@@ -6,10 +6,10 @@ import 'package:studychinesetoday/components/app/display_image.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
 import 'package:studychinesetoday/utils/methods.dart';
-import '../../animations/slide_animation.dart';
-import '../../configs/app_colors.dart';
-import '../../configs/constants.dart';
-import '../../models/word_data.dart';
+import '../../../../animations/slide_animation.dart';
+import '../../../../configs/app_colors.dart';
+import '../../../../configs/constants.dart';
+import '../../../../models/word_data.dart';
 import 'flashcard_provider.dart';
 
 class Flashcard extends ConsumerStatefulWidget {

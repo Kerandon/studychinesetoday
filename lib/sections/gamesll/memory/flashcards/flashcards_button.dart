@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:studychinesetoday/games/flashcards/flash_cards_page.dart';
-import '../../configs/app_colors.dart';
-import '../../configs/constants.dart';
+import '../../../../configs/app_colors.dart';
+import '../../../../configs/constants.dart';
+import 'flash_cards_page.dart';
 
 class FlashcardsButton extends StatelessWidget {
   const FlashcardsButton({

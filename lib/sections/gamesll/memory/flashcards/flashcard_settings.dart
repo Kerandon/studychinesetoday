@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/games/flashcards/flashcard_provider.dart';
-import '../../models/topic_data.dart';
+import '../../../../models/topic_data.dart';
+import '../../../../components/forms/custom_form_chips.dart';
 import 'flash_cards_page.dart';
-import '../../components/forms/custom_form_chips.dart';
+import 'flashcard_provider.dart';
 
 class FlashcardsSettings extends ConsumerStatefulWidget {
   const FlashcardsSettings({

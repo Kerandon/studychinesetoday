@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/components/app/loading_screen.dart';
-import 'package:studychinesetoday/games/memory/memory_provider.dart';
 import 'package:studychinesetoday/state_management/topics_data.dart';
 
-import '../../models/word_data.dart';
-import '../../utils/methods.dart';
+import '../../../models/word_data.dart';
+import '../../../utils/methods.dart';
 import 'grid_content.dart';
+import 'memory_provider.dart';
 import 'memory_word.dart';
 
 class MemoryPage extends ConsumerStatefulWidget {
@@ -40,7 +40,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Memory Game!'),
+          title: const Text('Memory Game!'),
           centerTitle: true,
         ),
         body: allWordsAsync.when(
@@ -51,13 +51,13 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
                   child: GridContent(memoryWords: data),
                 );
               } else {
-                return LoadingScreen();
+                return const LoadingScreen();
               }
             },
             error: (e, stack) => Container(
                   color: Colors.red,
                 ),
-            loading: () => LoadingScreen()));
+            loading: () => const LoadingScreen()));
   }
 
   _setUp(

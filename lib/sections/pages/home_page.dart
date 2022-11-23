@@ -1,13 +1,14 @@
-import 'package:auto_size_text/auto_size_text.dart';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/games/flashcards/flashcards_button.dart';
+
 import 'package:studychinesetoday/components/home/topics_carousel.dart';
 import 'package:studychinesetoday/configs/app_colors.dart';
 import 'package:studychinesetoday/state_management/topics_data.dart';
 import 'package:studychinesetoday/utils/methods.dart';
 
-import '../games/memory/memory_page.dart';
+import '../gamesll/memory/flashcards/flashcards_button.dart';
+import '../gamesll/memory/memory_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -42,49 +43,6 @@ class HomePageState extends ConsumerState<HomePage> {
           controller: _scrollController,
           child: Column(
             children: [
-              SizedBox(
-                width: double.infinity,
-                height: size.height * 0.50,
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Align(
-                            alignment: const Alignment(0.4, 0),
-                            child: SizedBox(
-                              width: size.width * 0.30,
-                              child: AutoSizeText(
-                                'Check out these easy tools',
-                                style: Theme.of(context).textTheme.displayLarge,
-                                minFontSize: 20,
-                                maxFontSize: 40,
-                                maxLines: 4,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: const Alignment(-0.4, 0),
-                            child: Padding(
-                              padding: EdgeInsets.all(size.width * 0.02),
-                              child: Image.asset(
-                                  'assets/images/app/background_main.png'),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
               FutureBuilder(
                 future: futureAllTopicsData,
                 builder:
@@ -96,21 +54,22 @@ class HomePageState extends ConsumerState<HomePage> {
                     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                       topicDataNotifier.addAllTopicsData(
                           allTopicsData: snapshot.data);
-                    });
+                    },
+                    );
 
                     return Column(
                       children: [
                         Row(
                           children: [
-                            Expanded(child: FlashcardsButton()),
+                            const Expanded(child: FlashcardsButton()),
                             Expanded(
                               child: Container(
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: AppColors.offWhite,
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => MemoryPage()));
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const MemoryPage()));
                                   },
                                   child: Text(
                                     'Memory',
@@ -124,7 +83,7 @@ class HomePageState extends ConsumerState<HomePage> {
                             )
                           ],
                         ),
-                        TopicsCarousel(),
+                        const TopicsCarousel(),
                       ],
                     );
                   } else {

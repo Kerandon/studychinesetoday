@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../models/word_data.dart';
+import '../../../models/word_data.dart';
 
 class MemoryWord extends Equatable {
   final int index;

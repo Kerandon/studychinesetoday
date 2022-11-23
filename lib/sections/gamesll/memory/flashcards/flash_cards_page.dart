@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/configs/constants.dart';
-import 'package:studychinesetoday/pages/home_page.dart';
+import 'package:studychinesetoday/sections/gamesll/memory/flashcards/side_bar_flashcards.dart';
 import 'package:studychinesetoday/state_management/topics_data.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
+
+import '../../../../models/topic_data.dart';
+import '../../../../models/word_data.dart';
+import '../../../pages/home_page.dart';
 import 'flash_card.dart';
-import 'side_bar_flashcards.dart';
-import '../../models/topic_data.dart';
-import '../../models/word_data.dart';
 import 'flashcard_provider.dart';
+
 
 class FlashcardsPage extends ConsumerStatefulWidget {
   const FlashcardsPage({Key? key}) : super(key: key);

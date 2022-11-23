@@ -1,7 +1,7 @@
-import 'package:equatable/equatable.dart';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../models/word_data.dart';
+import '../../../models/word_data.dart';
 import 'memory_word.dart';
 
 class MemoryState {
@@ -31,9 +31,6 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
 
   addMemoryWords({required Set<MemoryWord> memoryWords}) {
     state = state.copyWith(memoryWords: memoryWords);
-    for(var m in state.memoryWords){
-      print('memory words tapped is ${m.index}');
-    }
   }
 
   addTappedMemoryWord({required MemoryWord memoryWord}) {

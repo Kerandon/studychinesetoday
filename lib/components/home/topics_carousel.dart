@@ -5,9 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/components/home/topic_thumbail.dart';
 
 import 'package:studychinesetoday/configs/constants.dart';
-
-import 'package:studychinesetoday/pages/all_topics_page.dart';
 import 'package:studychinesetoday/state_management/topics_data.dart';
+
+import '../../sections/pages/all_topics_page.dart';
 
 
 class TopicsCarousel extends ConsumerWidget {
@@ -25,7 +25,7 @@ class TopicsCarousel extends ConsumerWidget {
       pageCollapsed = false;
     }
 
-    final topicDataState = ref.read(topicsDataProvider);
+    final topicDataState = ref.watch(topicsDataProvider);
 
     return SizedBox(
       width: size.width * 0.90,

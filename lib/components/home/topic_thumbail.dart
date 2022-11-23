@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/pages/topic_page.dart';
+import 'package:studychinesetoday/sections/pages/topic_page.dart';
 import 'package:studychinesetoday/utils/methods.dart';
 
 import '../../configs/app_colors.dart';

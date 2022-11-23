@@ -11,6 +11,6 @@ class LoadingScreen extends StatelessWidget {
       width: double.infinity,
         height: double.infinity,
         color: Colors.amber,
-        child: Center(child: CircularProgressIndicator()));
+        child: const Center(child: CircularProgressIndicator()));
   }
 }

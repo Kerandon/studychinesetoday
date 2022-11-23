@@ -1,8 +1,8 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
-import 'flash_card.dart';
-import '../../models/word_data.dart';
-import '../../utils/enums/card_stages.dart';
+
+import '../../../../models/word_data.dart';
+import '../../../../utils/enums/card_stages.dart';
 
 class FlashcardManager {
   final int currentIndex;
