@@ -26,7 +26,7 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
   late final AnimationController _controller;
   late final Animation<double> _flipAnimation;
   bool _animationHasRun = false;
-  bool _notifiedHasFlipped = false;
+  bool _notifiedHasHalfFlipped = false;
 
   @override
   void initState() {
@@ -61,15 +61,17 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, index) {
+
         if (_controller.value >= 0.50) {
-          print('50% has flipped!');
-          widget.halfFlipCompleted?.call();
-          if (!_notifiedHasFlipped) {
+
+
+          if (!_notifiedHasHalfFlipped) {
+            widget.halfFlipCompleted?.call();
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               ref
                   .read(flashcardProvider.notifier)
                   .setHasHalfFlipped(halfFlipped: {widget.index: true});
-              _notifiedHasFlipped = true;
+              _notifiedHasHalfFlipped = true;
             });
           }
         }
