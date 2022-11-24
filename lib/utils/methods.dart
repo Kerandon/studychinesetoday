@@ -67,14 +67,19 @@ Future<Set<TopicData>> getAllTopicsData() async {
         topicData.entries.firstWhere((element) => element.key == kPinyin).value;
     Set<WordData> wordData = {};
     for (var w in d.data().entries) {
+
       final data = w.value as Map<String, dynamic>;
       final wordCharacter =
           data.entries.firstWhere((element) => element.key == kCharacter).value;
       final wordPinyin =
           data.entries.firstWhere((element) => element.key == kPinyin).value;
-      wordData.add(WordData(
-          english: w.key, character: wordCharacter, pinyin: wordPinyin));
+      if(w.key != kTopicData) {
+        wordData.add(WordData(
+            english: w.key, character: wordCharacter, pinyin: wordPinyin));
+      }
     }
+
+
 
     topicDataList.add(TopicData(
         english: topicEnglish,

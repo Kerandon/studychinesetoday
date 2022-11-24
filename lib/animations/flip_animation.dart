@@ -9,13 +9,13 @@ class FlipAnimation extends ConsumerStatefulWidget {
     required this.child,
     required this.index,
     required this.animate,
-    this.flipCompleted,
+    this.halfFlipCompleted,
   }) : super(key: key);
 
   final Widget child;
   final int index;
   final bool animate;
-  final VoidCallback? flipCompleted;
+  final VoidCallback? halfFlipCompleted;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => FlipAnimationState();
@@ -32,13 +32,9 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1900),
       vsync: this,
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          widget.flipCompleted?.call();
-        }
-      });
+    );
 
     _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
@@ -66,6 +62,8 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
       animation: _controller,
       builder: (context, index) {
         if (_controller.value >= 0.50) {
+          print('50% has flipped!');
+          widget.halfFlipCompleted?.call();
           if (!_notifiedHasFlipped) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               ref

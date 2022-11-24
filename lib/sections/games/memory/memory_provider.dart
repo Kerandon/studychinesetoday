@@ -33,10 +33,15 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
     state = state.copyWith(memoryWords: memoryWords);
   }
 
-  addTappedMemoryWord({required MemoryWord memoryWord}) {
+  tileTapped({required MemoryWord memoryWord}) {
     state = state
         .copyWith(tappedMemoryWords: [...state.tappedMemoryWords, memoryWord]);
+
+    for(var t in state.tappedMemoryWords){
+      print('${t.index} ${t.word.english} ${t.flipAround}');
+    }
   }
+
 }
 
 final memoryProvider = StateNotifierProvider<MemoryNotifier, MemoryState>(
