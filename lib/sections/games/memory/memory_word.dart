@@ -1,21 +1,22 @@
-import 'package:equatable/equatable.dart';
+
 
 import '../../../models/word_data.dart';
 
-class MemoryWord extends Equatable {
-  final int index;
+class MemoryWord {
   final WordData word;
   final bool showChinese;
-  final bool flipAround;
+  final bool isTapped;
+  final bool isFullyFlippedAround;
+  final bool isHalfFlipped;
   final bool isAnswered;
 
-  const MemoryWord(
-      {required this.index,
-        required this.word,
-        required this.isAnswered,
-        this.flipAround = false,
-        this.showChinese = false});
+  const MemoryWord({
+    required this.word,
+    this.isTapped = false,
+    this.isFullyFlippedAround = false,
+    this.isHalfFlipped = false,
+    this.showChinese = false,
+    this.isAnswered = false,
+  });
 
-  @override
-  List<Object> get props => [index];
 }

@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/flip_animation.dart';
+import 'package:studychinesetoday/configs/constants.dart';
 import 'package:studychinesetoday/sections/games/memory/memory_provider.dart';
 
+import '../../../configs/app_colors.dart';
 import 'memory_word.dart';
 
 class MemoryTile extends ConsumerStatefulWidget {
@@ -12,77 +16,97 @@ class MemoryTile extends ConsumerStatefulWidget {
     required this.memoryWord,
   });
 
-  final MemoryWord memoryWord;
+  final MapEntry<int, MemoryWord> memoryWord;
 
   @override
   ConsumerState<MemoryTile> createState() => _MemoryTileState();
 }
 
 class _MemoryTileState extends ConsumerState<MemoryTile> {
-  bool _isFlippedOver = false;
-
   @override
   Widget build(BuildContext context) {
-    bool flipAround = false;
     final memoryState = ref.watch(memoryProvider);
     final memoryNotifier = ref.read(memoryProvider.notifier);
 
-    if (memoryState.tappedMemoryWords.isNotEmpty) {
-      if (memoryState.tappedMemoryWords.last.index == widget.memoryWord.index) {
-        flipAround = true;
-      }
-    }
+    MapEntry<int, MemoryWord> word = memoryState.memoryWords.entries
+        .firstWhere((element) => element.key == widget.memoryWord.key);
 
     return FlipAnimation(
-      animate: flipAround,
-      index: widget.memoryWord.index,
+      animate: word.value.isTapped,
+      reverseFlip: false,
+      index: 1,
       halfFlipCompleted: () {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          print(
-              'half flip for ${widget.memoryWord.index} and ${widget.memoryWord.word.english}');
-          _isFlippedOver = !_isFlippedOver;
-          setState(() {});
-        });
+        WidgetsBinding.instance.addPostFrameCallback(
+          (timeStamp) {
+            memoryNotifier.tileFlippedHalf(memoryWord: widget.memoryWord);
+          },
+        );
+      },
+      fullFlipCompleted: () {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (timeStamp) {},
+        );
       },
       child: GestureDetector(
-          onTap: () {
-            memoryNotifier.tileTapped(memoryWord: widget.memoryWord);
-            print('tapped ${widget.memoryWord.index}');
-          },
-          child: Container(
-            color: Colors.red,
-            child: Stack(
-              children: [
-                _isFlippedOver
-                    ? SizedBox()
-                    : Center(child: Icon(Icons.question_mark_outlined)),
-                Opacity(
-                  opacity: _isFlippedOver ? 1 : 0,
-                  child: widget.memoryWord.showChinese
-                      ? Center(child: Text(widget.memoryWord.word.character))
-                      : Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: CachedNetworkImage(
-                              imageUrl: widget.memoryWord.word.url!,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: LinearProgressIndicator(
-                                    value: downloadProgress.progress,
-                                  ),
+        onTap: () {
+          memoryNotifier.tileTapped(memoryWord: widget.memoryWord);
+        },
+        child: Stack(
+          children: [
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(word.value.isHalfFlipped ? pi : 0),
+              child: word.value.showChinese
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(kRadius),
+                      ),
+                      child: Center(child: Text(word.value.word.character)),
+                    )
+                  : Center(
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(kRadius),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: CachedNetworkImage(
+                            imageUrl: widget.memoryWord.value.word.url!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: LinearProgressIndicator(
+                                  value: downloadProgress.progress,
                                 ),
                               ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
                             ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
                           ),
                         ),
-                ),
-              ],
+                      ),
+                    ),
             ),
-          )),
+            Opacity(
+              opacity: word.value.isHalfFlipped ? 0 : 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.red,
+                  borderRadius: BorderRadius.circular(kRadius),
+                ),
+                child: Center(
+                  child: Icon(Icons.question_mark_outlined),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

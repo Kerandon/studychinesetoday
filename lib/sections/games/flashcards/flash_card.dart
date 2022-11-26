@@ -64,7 +64,7 @@ class _FlashcardState extends ConsumerState<Flashcard> {
       }
       return false;
     }, orElse: () => const MapEntry(0, false));
-    //
+
     bool hasFlipped = false;
     for (var f in flashcardManager.hasHalfFlipped) {
       if (f.entries.first.key == widget.index) {

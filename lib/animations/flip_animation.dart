@@ -9,13 +9,17 @@ class FlipAnimation extends ConsumerStatefulWidget {
     required this.child,
     required this.index,
     required this.animate,
+    this.reverseFlip = false,
     this.halfFlipCompleted,
+    this.fullFlipCompleted,
   }) : super(key: key);
 
   final Widget child;
   final int index;
   final bool animate;
+  final bool reverseFlip;
   final VoidCallback? halfFlipCompleted;
+  final VoidCallback? fullFlipCompleted;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => FlipAnimationState();
@@ -27,6 +31,7 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
   late final Animation<double> _flipAnimation;
   bool _animationHasRun = false;
   bool _notifiedHasHalfFlipped = false;
+  bool _notifiedHasFullFlipped = false;
 
   @override
   void initState() {
@@ -53,6 +58,9 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
       _controller.forward();
       _animationHasRun = true;
     }
+    if(widget.reverseFlip){
+      _controller.reverse();
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -73,6 +81,12 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
                   .setHasHalfFlipped(halfFlipped: {widget.index: true});
               _notifiedHasHalfFlipped = true;
             });
+          }
+        }
+        if(!_notifiedHasFullFlipped) {
+          if (_controller.value == 1.0) {
+            widget.fullFlipCompleted?.call();
+            _notifiedHasFullFlipped = true;
           }
         }
         return Transform(

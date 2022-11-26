@@ -5,7 +5,7 @@ import 'memory_word.dart';
 class GridContent extends StatefulWidget {
   const GridContent({Key? key, required this.memoryWords}) : super(key: key);
 
-  final Set<MemoryWord> memoryWords;
+  final Map<int, MemoryWord> memoryWords;
 
   @override
   State<GridContent> createState() => _GridContentState();
@@ -22,7 +22,7 @@ class _GridContentState extends State<GridContent> {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 6, mainAxisSpacing: 6, crossAxisSpacing: 6),
       itemBuilder: (context, index) => MemoryTile(
-        memoryWord: widget.memoryWords.elementAt(index),
+        memoryWord: widget.memoryWords.entries.elementAt(index)
       ),
     );
   }
