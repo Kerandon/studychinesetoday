@@ -16,7 +16,7 @@ class MemoryTile extends ConsumerStatefulWidget {
     required this.memoryWord,
   });
 
-  final MapEntry<int, MemoryWord> memoryWord;
+  final MapEntry<int, MemoryModel> memoryWord;
 
   @override
   ConsumerState<MemoryTile> createState() => _MemoryTileState();
@@ -28,12 +28,12 @@ class _MemoryTileState extends ConsumerState<MemoryTile> {
     final memoryState = ref.watch(memoryProvider);
     final memoryNotifier = ref.read(memoryProvider.notifier);
 
-    MapEntry<int, MemoryWord> word = memoryState.memoryWords.entries
+    MapEntry<int, MemoryModel> word = memoryState.memoryWords.entries
         .firstWhere((element) => element.key == widget.memoryWord.key);
 
     return FlipAnimation(
       animate: word.value.isTapped,
-      reverseFlip: false,
+      reverseFlip: word.value.reverseFlip,
       index: 1,
       halfFlipCompleted: () {
         WidgetsBinding.instance.addPostFrameCallback(
@@ -44,8 +44,22 @@ class _MemoryTileState extends ConsumerState<MemoryTile> {
       },
       fullFlipCompleted: () {
         WidgetsBinding.instance.addPostFrameCallback(
-          (timeStamp) {},
+          (timeStamp) {
+            memoryNotifier.tileFlippedFull(memoryWord: widget.memoryWord);
+          },
         );
+      },
+      reverseFlipHalfCompleted: () {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          memoryNotifier.reverseFlipHalfCompleted(
+              memoryWord: widget.memoryWord);
+        });
+      },
+      reverseFlipCompleted: () {
+        print('reverse flip completed ${word.value.word.english}');
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          memoryNotifier.onFlippedBack(memoryWord: widget.memoryWord);
+        });
       },
       child: GestureDetector(
         onTap: () {
@@ -99,11 +113,21 @@ class _MemoryTileState extends ConsumerState<MemoryTile> {
                   color: AppColors.red,
                   borderRadius: BorderRadius.circular(kRadius),
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(Icons.question_mark_outlined),
                 ),
               ),
-            )
+            ),
+            word.value.isAnswered
+                ? Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(kRadius),
+                    ),
+                  )
+                : SizedBox()
           ],
         ),
       ),

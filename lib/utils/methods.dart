@@ -20,7 +20,6 @@ Future<String> getWordURL(
       .getDownloadURL();
 }
 
-
 Future<Set<WordData>> getWordsURLs({required Set<WordData> words}) async {
   final instance = FirebaseStorage.instance;
 
@@ -35,21 +34,21 @@ Future<Set<WordData>> getWordsURLs({required Set<WordData> words}) async {
             .ref('topics/${w.topicData!.english}/${w.english}.png')
             .getDownloadURL();
       } on FirebaseException catch (e) {
-        print('Get images from FirebaseStorage failed ${e.message} ${e.code} ${e
-            .stackTrace}');
+        throw Exception(e.message);
       }
-      updatedWords.add(WordData(english: w.english,
-          character: w.character,
-          pinyin: w.pinyin,
-          topicData: w.topicData,
-          url: url),);
+      updatedWords.add(
+        WordData(
+            english: w.english,
+            character: w.character,
+            pinyin: w.pinyin,
+            topicData: w.topicData,
+            url: url),
+      );
     }
   }
 
   return updatedWords;
 }
-
-
 
 Future<Set<TopicData>> getAllTopicsData() async {
   final snapshot =
@@ -67,19 +66,16 @@ Future<Set<TopicData>> getAllTopicsData() async {
         topicData.entries.firstWhere((element) => element.key == kPinyin).value;
     Set<WordData> wordData = {};
     for (var w in d.data().entries) {
-
       final data = w.value as Map<String, dynamic>;
       final wordCharacter =
           data.entries.firstWhere((element) => element.key == kCharacter).value;
       final wordPinyin =
           data.entries.firstWhere((element) => element.key == kPinyin).value;
-      if(w.key != kTopicData) {
+      if (w.key != kTopicData) {
         wordData.add(WordData(
             english: w.key, character: wordCharacter, pinyin: wordPinyin));
       }
     }
-
-
 
     topicDataList.add(TopicData(
         english: topicEnglish,
@@ -108,8 +104,7 @@ Future<Set<WordData>> allWordsToList(
                   .ref('topics/${t.english}/${w.english}.png')
                   .getDownloadURL();
             } on FirebaseException catch (e) {
-              print(
-                  '${e.message} ${e.code} ${e.stackTrace} ${e.plugin} ${e.hashCode}');
+              throw Exception(e.message);
             }
           }
         }

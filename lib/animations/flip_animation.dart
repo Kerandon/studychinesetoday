@@ -12,6 +12,8 @@ class FlipAnimation extends ConsumerStatefulWidget {
     this.reverseFlip = false,
     this.halfFlipCompleted,
     this.fullFlipCompleted,
+    this.reverseFlipHalfCompleted,
+    this.reverseFlipCompleted,
   }) : super(key: key);
 
   final Widget child;
@@ -20,6 +22,8 @@ class FlipAnimation extends ConsumerStatefulWidget {
   final bool reverseFlip;
   final VoidCallback? halfFlipCompleted;
   final VoidCallback? fullFlipCompleted;
+  final VoidCallback? reverseFlipHalfCompleted;
+  final VoidCallback? reverseFlipCompleted;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => FlipAnimationState();
@@ -31,6 +35,7 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
   late final Animation<double> _flipAnimation;
   bool _animationHasRun = false;
   bool _notifiedHasHalfFlipped = false;
+  bool _notifiedHasReverseHalfFlipped = false;
   bool _notifiedHasFullFlipped = false;
 
   @override
@@ -58,7 +63,7 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
       _controller.forward();
       _animationHasRun = true;
     }
-    if(widget.reverseFlip){
+    if (widget.reverseFlip) {
       _controller.reverse();
     }
     super.didUpdateWidget(oldWidget);
@@ -69,10 +74,7 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, index) {
-
         if (_controller.value >= 0.50) {
-
-
           if (!_notifiedHasHalfFlipped) {
             widget.halfFlipCompleted?.call();
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -83,10 +85,21 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
             });
           }
         }
-        if(!_notifiedHasFullFlipped) {
+        if (!_notifiedHasFullFlipped) {
           if (_controller.value == 1.0) {
             widget.fullFlipCompleted?.call();
             _notifiedHasFullFlipped = true;
+          }
+        }
+        if (widget.reverseFlip) {
+          if (_controller.value < 0.50) {
+            if (!_notifiedHasReverseHalfFlipped) {
+              widget.reverseFlipHalfCompleted?.call();
+              _notifiedHasReverseHalfFlipped = true;
+            }
+          }
+          if (_controller.value == 0.0) {
+            widget.reverseFlipCompleted?.call();
           }
         }
         return Transform(

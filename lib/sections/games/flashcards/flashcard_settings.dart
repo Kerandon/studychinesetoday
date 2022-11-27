@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../../models/topic_data.dart';
 import '../../../../components/forms/custom_form_chips.dart';
 import 'flash_cards_page.dart';
 import 'flashcard_provider.dart';
@@ -146,8 +145,6 @@ class FlashcardsSettingsState extends ConsumerState<FlashcardsSettings> {
                   if (isValidated == true) {
                     final int number =
                         _formKey.currentState!.fields['number']?.value;
-                    final TopicData topic =
-                        _formKey.currentState!.fields['topic']?.value;
 
                     ref
                         .read(flashcardProvider.notifier)

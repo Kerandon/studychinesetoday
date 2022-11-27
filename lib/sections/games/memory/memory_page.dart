@@ -31,7 +31,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final allWordsProvider = FutureProvider.autoDispose<Map<int, MemoryWord>>((ref) {
+    final allWordsProvider = FutureProvider.autoDispose<Map<int, MemoryModel>>((ref) {
       final memoryState = ref.watch(memoryProvider);
       return memoryState.memoryWords;
     });
@@ -67,14 +67,14 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
         await allWordsToList(topicsDataState: topicsDataState);
     allWords = shuffleAllWords(allWordsSet: allWords, limit: 18);
     allWords = await getWordsURLs(words: allWords);
-    Map<int, MemoryWord> memoryWords = {};
+    Map<int, MemoryModel> memoryWords = {};
 
     for (int i = 0; i < 18; i++) {
       memoryWords.addEntries({
-        MapEntry(i, MemoryWord(word: allWords.elementAt(i),),)}
+        MapEntry(i, MemoryModel(word: allWords.elementAt(i),),)}
       );
       memoryWords.addEntries({
-        MapEntry(i + 18, MemoryWord(word: allWords.elementAt(i), showChinese: true),)}
+        MapEntry(i + 18, MemoryModel(word: allWords.elementAt(i), showChinese: true),)}
       );
     }
 

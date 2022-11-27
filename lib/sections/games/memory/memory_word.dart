@@ -1,22 +1,21 @@
-
-
 import '../../../models/word_data.dart';
 
-class MemoryWord {
+class MemoryModel {
   final WordData word;
   final bool showChinese;
   final bool isTapped;
-  final bool isFullyFlippedAround;
   final bool isHalfFlipped;
+  final bool isFullyFlipped;
   final bool isAnswered;
+  final bool reverseFlip;
 
-  const MemoryWord({
+  const MemoryModel({
     required this.word,
-    this.isTapped = false,
-    this.isFullyFlippedAround = false,
-    this.isHalfFlipped = false,
     this.showChinese = false,
+    this.isTapped = false,
+    this.isHalfFlipped = false,
+    this.isFullyFlipped = false,
     this.isAnswered = false,
+    this.reverseFlip = false,
   });
-
 }
