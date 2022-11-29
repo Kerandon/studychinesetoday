@@ -4,10 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/sections/pages/topic_page.dart';
 import 'package:studychinesetoday/utils/methods.dart';
 
+import '../../components/app/display_image.dart';
 import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
 import '../../models/topic_data.dart';
-import '../app/display_image.dart';
 
 class TopicThumbnail extends ConsumerStatefulWidget {
   const TopicThumbnail({

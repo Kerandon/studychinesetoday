@@ -8,7 +8,7 @@ import 'package:studychinesetoday/utils/enums/session_type.dart';
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
 import '../../../../models/topic_data.dart';
 import '../../../../models/word_data.dart';
-import '../../pages/home_page.dart';
+import '../../home_page/home_page.dart';
 import 'flash_card.dart';
 import 'flashcard_provider.dart';
 

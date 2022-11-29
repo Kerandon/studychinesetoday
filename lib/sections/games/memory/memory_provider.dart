@@ -11,6 +11,7 @@ class MemoryState {
   final bool canFlip;
   final bool reverseFlip;
   final bool ignoreTaps;
+  final int numberCardsFullFlipped;
 
   MemoryState({
     required this.allSelectedWords,
@@ -20,6 +21,7 @@ class MemoryState {
     required this.canFlip,
     required this.reverseFlip,
     required this.ignoreTaps,
+    required this.numberCardsFullFlipped,
   });
 
   MemoryState copyWith({
@@ -30,6 +32,7 @@ class MemoryState {
     bool? canFlip,
     bool? reverseFlip,
     bool? ignoreTaps,
+    int? numberCardsFullFlipped,
   }) {
     return MemoryState(
       allSelectedWords: allSelectedWords ?? this.allSelectedWords,
@@ -39,6 +42,8 @@ class MemoryState {
       canFlip: canFlip ?? this.canFlip,
       reverseFlip: reverseFlip ?? this.reverseFlip,
       ignoreTaps: ignoreTaps ?? this.ignoreTaps,
+      numberCardsFullFlipped:
+          numberCardsFullFlipped ?? this.numberCardsFullFlipped,
     );
   }
 }
@@ -51,23 +56,18 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
   }
 
   tileTapped({required MapEntry<int, MemoryModel> memoryWord}) {
-
-
-    state = state.copyWith(ignoreTaps: true);
     if (state.tappedWords.entries.length < 2) {
-
       state = state.copyWith(
-          tappedWords: {...state.tappedWords, memoryWord.key: memoryWord.value
-          },
-          canFlip: true
-      );
+          tappedWords: {...state.tappedWords, memoryWord.key: memoryWord.value},
+          canFlip: true);
     } else {
-
-      state = state.copyWith(canFlip: false);
+      state = state.copyWith(canFlip: false, ignoreTaps: true);
     }
   }
 
-  onHalfFlip({required MapEntry<int, MemoryModel> memoryWord, required bool isForward}) {
+  onHalfFlip(
+      {required MapEntry<int, MemoryModel> memoryWord,
+      required bool isForward}) {
     var updatedWords = state.memoryWords;
     updatedWords.update(
       memoryWord.key,
@@ -81,8 +81,6 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
   }
 
   onFullFlip({required MapEntry<int, MemoryModel> memoryWord}) {
-
-
     if (state.tappedWords.entries.length == 2) {
       if (state.tappedWords.entries.elementAt(0).value.word.english ==
           state.tappedWords.entries.elementAt(1).value.word.english) {
@@ -91,19 +89,15 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
           ...state.tappedWords.keys
         }, tappedWords: {}, ignoreTaps: false);
       } else {
-
-        state = state.copyWith(reverseFlip: true, canFlip: true, ignoreTaps: true);
+        state =
+            state.copyWith(reverseFlip: true, canFlip: true, ignoreTaps: true);
       }
-    }else{
-
+    } else {
       state = state.copyWith(ignoreTaps: false);
     }
   }
 
   onReverseFlip() {
-
-
-
     var updatedWords = state.memoryWords;
     for (var w in updatedWords.entries) {
       if (!state.answeredCorrectly.contains(w.key)) {
@@ -120,25 +114,24 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
 
     state = state.copyWith(
         memoryWords: updatedWords,
-        canFlip: true, reverseFlip: false,
-        tappedWords: {}, ignoreTaps: false);
-
+        canFlip: true,
+        reverseFlip: false,
+        tappedWords: {},
+        ignoreTaps: false);
   }
-
-
-
-
 }
 
 final memoryProvider = StateNotifierProvider<MemoryNotifier, MemoryState>(
   (ref) => MemoryNotifier(
     MemoryState(
-        allSelectedWords: {},
-        memoryWords: {},
-        tappedWords: {},
-        answeredCorrectly: {},
-        canFlip: false,
-        reverseFlip: false, ignoreTaps: false,
+      allSelectedWords: {},
+      memoryWords: {},
+      tappedWords: {},
+      answeredCorrectly: {},
+      canFlip: false,
+      reverseFlip: false,
+      ignoreTaps: false,
+      numberCardsFullFlipped: 0,
     ),
   ),
 );

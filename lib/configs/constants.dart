@@ -8,3 +8,4 @@ const kPinyin = 'pinyin';
 const kCharacter = 'character';
 const kShadow =
     BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 3);
+const kHomePageTileWidth = 0.80;

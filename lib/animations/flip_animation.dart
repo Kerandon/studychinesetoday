@@ -102,7 +102,7 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.0008)
+            ..setEntry(3, 2, 0.0010)
             ..rotateY(_flipAnimation.value * pi),
           child: widget.child,
         );
