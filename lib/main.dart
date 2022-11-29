@@ -22,7 +22,9 @@ Future<void> main() async {
       appId: "1:526387177583:web:6a406217101828b16a459a",
       measurementId: "G-FP8PC242MC");
 
-  await Firebase.initializeApp(options: firebaseOptions);
+  await Firebase.initializeApp(
+    name: "studychinesetoday",
+      options: firebaseOptions);
 
   runApp(
     const ProviderScope(

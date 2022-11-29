@@ -15,14 +15,26 @@ class _GridContentState extends State<GridContent> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return GridView.builder(
-      padding: EdgeInsets.fromLTRB(
-          size.width * 0.30, size.height * 0.05, size.width * 0.30, 0),
-      itemCount: 36,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 6, mainAxisSpacing: 6, crossAxisSpacing: 6),
-      itemBuilder: (context, index) => MemoryTile(
-        memoryWord: widget.memoryWords.entries.elementAt(index)
+    return Center(
+      child: Container(
+        width: size.width * 0.80,
+        height: size.height * 0.80,
+        color: Colors.grey,
+        child: Center(
+          child: GridView.builder(
+            padding: EdgeInsets.only(
+                left: size.width * 0.20, right: size.width * 0.15),
+            shrinkWrap: true,
+            itemCount: 36,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 6,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
+            ),
+            itemBuilder: (context, index) => MemoryTile(
+                memoryWord: widget.memoryWords.entries.elementAt(index)),
+          ),
+        ),
       ),
     );
   }

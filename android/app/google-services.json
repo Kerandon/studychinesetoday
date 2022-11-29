@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "526387177583",
+    "project_id": "studychinesetoday-7b129",
+    "storage_bucket": "studychinesetoday-7b129.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526387177583:android:f3d4e31f41228d646a459a",
+        "android_client_info": {
+          "package_name": "com.banzura.studychinesetoday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "526387177583-d1keu9gbudg7tiq7q7bpn9e6252k2c3s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0tmT_Mvv0a3OMzET755Pslc9_bnNw1lM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "526387177583-d1keu9gbudg7tiq7q7bpn9e6252k2c3s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

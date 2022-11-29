@@ -87,10 +87,6 @@ class _FlashcardState extends ConsumerState<Flashcard> {
 
     return FlipAnimation(
       animate: flipCard,
-      index: widget.index,
-      halfFlipCompleted: () {
-        flashcardNotifier.setCardState(stage: CardStage.swipe);
-      },
       child: SlideAnimation(
         animate: widget.slideDirection != SlideDirection.none,
         slideDirection: widget.slideDirection,

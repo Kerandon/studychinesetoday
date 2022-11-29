@@ -46,10 +46,7 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
         body: allWordsAsync.when(
             data: (data) {
               if (data.isNotEmpty) {
-                return Container(
-                  color: Colors.green,
-                  child: GridContent(memoryWords: data),
-                );
+                return GridContent(memoryWords: data);
               } else {
                 return const LoadingScreen();
               }

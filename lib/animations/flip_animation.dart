@@ -1,29 +1,25 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../sections/games/flashcards/flashcard_provider.dart';
+import 'package:studychinesetoday/utils/enums/flip_stage.dart';
 
 class FlipAnimation extends ConsumerStatefulWidget {
   const FlipAnimation({
     Key? key,
     required this.child,
-    required this.index,
     required this.animate,
     this.reverseFlip = false,
-    this.halfFlipCompleted,
-    this.fullFlipCompleted,
-    this.reverseFlipHalfCompleted,
-    this.reverseFlipCompleted,
+    this.flipCallback,
+    this.duration = 1100,
+    this.delay = 0,
   }) : super(key: key);
 
   final Widget child;
-  final int index;
   final bool animate;
   final bool reverseFlip;
-  final VoidCallback? halfFlipCompleted;
-  final VoidCallback? fullFlipCompleted;
-  final VoidCallback? reverseFlipHalfCompleted;
-  final VoidCallback? reverseFlipCompleted;
+  final Function(FlipStage)? flipCallback;
+  final int duration;
+  final int delay;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => FlipAnimationState();
@@ -33,22 +29,32 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _flipAnimation;
-  bool _animationHasRun = false;
-  bool _notifiedHasHalfFlipped = false;
-  bool _notifiedHasReverseHalfFlipped = false;
-  bool _notifiedHasFullFlipped = false;
+  bool _notifiedFullFlipCompleted = false;
+  bool _notifiedReverseFlipCompleted = false;
+  bool _notifiedHalfFlipCompletedForward = false;
+  bool _notifiedHalfFlipCompletedReversed = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1900),
+      duration: Duration(milliseconds: widget.duration),
       vsync: this,
-    );
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed && !_notifiedFullFlipCompleted) {
+          widget.flipCallback?.call(FlipStage.full);
+          _notifiedFullFlipCompleted = true;
+          _notifiedReverseFlipCompleted = false;
+        }
+        if (status == AnimationStatus.dismissed && !_notifiedReverseFlipCompleted) {
+          widget.flipCallback?.call(FlipStage.reverseCompleted);
+          _notifiedReverseFlipCompleted = true;
+          _notifiedFullFlipCompleted = false;
+        }
+      });
 
-    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -59,13 +65,20 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
 
   @override
   void didUpdateWidget(covariant FlipAnimation oldWidget) {
-    if (widget.animate && !_animationHasRun) {
-      _controller.forward();
-      _animationHasRun = true;
-    }
-    if (widget.reverseFlip) {
-      _controller.reverse();
-    }
+    Future.delayed(
+      Duration(milliseconds: widget.delay),
+      () {
+        if (mounted) {
+          if (widget.animate) {
+            _controller.forward();
+          }
+          if (widget.reverseFlip) {
+            _controller.reverse();
+          }
+        }
+      },
+    );
+
     super.didUpdateWidget(oldWidget);
   }
 
@@ -74,34 +87,18 @@ class FlipAnimationState extends ConsumerState<FlipAnimation>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, index) {
-        if (_controller.value >= 0.50) {
-          if (!_notifiedHasHalfFlipped) {
-            widget.halfFlipCompleted?.call();
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              ref
-                  .read(flashcardProvider.notifier)
-                  .setHasHalfFlipped(halfFlipped: {widget.index: true});
-              _notifiedHasHalfFlipped = true;
-            });
-          }
+        if (_controller.status == AnimationStatus.forward && _controller.value > 0.50 && !_notifiedHalfFlipCompletedForward) {
+           widget.flipCallback?.call(FlipStage.halfForward);
+          _notifiedHalfFlipCompletedForward = true;
+           _notifiedHalfFlipCompletedReversed = false;
         }
-        if (!_notifiedHasFullFlipped) {
-          if (_controller.value == 1.0) {
-            widget.fullFlipCompleted?.call();
-            _notifiedHasFullFlipped = true;
-          }
+        if (_controller.status == AnimationStatus.reverse && _controller.value < 0.50 && !_notifiedHalfFlipCompletedReversed) {
+           widget.flipCallback?.call(FlipStage.halfBack);
+          _notifiedHalfFlipCompletedReversed = true;
+           _notifiedHalfFlipCompletedForward = false;
+
         }
-        if (widget.reverseFlip) {
-          if (_controller.value < 0.50) {
-            if (!_notifiedHasReverseHalfFlipped) {
-              widget.reverseFlipHalfCompleted?.call();
-              _notifiedHasReverseHalfFlipped = true;
-            }
-          }
-          if (_controller.value == 0.0) {
-            widget.reverseFlipCompleted?.call();
-          }
-        }
+
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()

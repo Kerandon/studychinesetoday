@@ -6,23 +6,39 @@ import 'memory_word.dart';
 class MemoryState {
   final Set<WordData> allSelectedWords;
   final Map<int, MemoryModel> memoryWords;
-  final bool flipBackTiles;
+  final Map<int, MemoryModel> tappedWords;
+  final Set<int> answeredCorrectly;
+  final bool canFlip;
+  final bool reverseFlip;
+  final bool ignoreTaps;
 
   MemoryState({
     required this.allSelectedWords,
     required this.memoryWords,
-    required this.flipBackTiles,
+    required this.tappedWords,
+    required this.answeredCorrectly,
+    required this.canFlip,
+    required this.reverseFlip,
+    required this.ignoreTaps,
   });
 
   MemoryState copyWith({
     Set<WordData>? allSelectedWords,
     Map<int, MemoryModel>? memoryWords,
-    bool? flipBackTiles,
+    Map<int, MemoryModel>? tappedWords,
+    Set<int>? answeredCorrectly,
+    bool? canFlip,
+    bool? reverseFlip,
+    bool? ignoreTaps,
   }) {
     return MemoryState(
       allSelectedWords: allSelectedWords ?? this.allSelectedWords,
       memoryWords: memoryWords ?? this.memoryWords,
-      flipBackTiles: flipBackTiles ?? this.flipBackTiles,
+      tappedWords: tappedWords ?? this.tappedWords,
+      answeredCorrectly: answeredCorrectly ?? this.answeredCorrectly,
+      canFlip: canFlip ?? this.canFlip,
+      reverseFlip: reverseFlip ?? this.reverseFlip,
+      ignoreTaps: ignoreTaps ?? this.ignoreTaps,
     );
   }
 }
@@ -35,133 +51,94 @@ class MemoryNotifier extends StateNotifier<MemoryState> {
   }
 
   tileTapped({required MapEntry<int, MemoryModel> memoryWord}) {
-    int numberTapped = state.memoryWords.entries
-        .where((element) => element.value.isTapped)
-        .length;
-    if (numberTapped < 2) {
-      var updatedWords = state.memoryWords;
-      updatedWords.update(
-          memoryWord.key,
-          (value) => MemoryModel(
-              word: memoryWord.value.word,
-              isTapped: true,
-              showChinese: memoryWord.value.showChinese));
-      state = state.copyWith(memoryWords: updatedWords);
+
+
+    state = state.copyWith(ignoreTaps: true);
+    if (state.tappedWords.entries.length < 2) {
+
+      state = state.copyWith(
+          tappedWords: {...state.tappedWords, memoryWord.key: memoryWord.value
+          },
+          canFlip: true
+      );
+    } else {
+
+      state = state.copyWith(canFlip: false);
     }
   }
 
-  tileFlippedHalf({required MapEntry<int, MemoryModel> memoryWord}) {
+  onHalfFlip({required MapEntry<int, MemoryModel> memoryWord, required bool isForward}) {
     var updatedWords = state.memoryWords;
     updatedWords.update(
       memoryWord.key,
       (value) => MemoryModel(
-          word: memoryWord.value.word,
-          isHalfFlipped: true,
-          showChinese: memoryWord.value.showChinese),
+        word: memoryWord.value.word,
+        showChinese: memoryWord.value.showChinese,
+        flipCard: isForward,
+      ),
     );
     state = state.copyWith(memoryWords: updatedWords);
   }
 
-  tileFlippedFull({required MapEntry<int, MemoryModel> memoryWord}) {
-    var updatedWords = state.memoryWords;
-    updatedWords.update(
-        memoryWord.key,
-        (value) => MemoryModel(
-              word: memoryWord.value.word,
-              isHalfFlipped: true,
-              isFullyFlipped: true,
-              showChinese: memoryWord.value.showChinese,
-            ));
+  onFullFlip({required MapEntry<int, MemoryModel> memoryWord}) {
 
-    state = state.copyWith(memoryWords: updatedWords);
 
-    final Map<int, MemoryModel> flippedWords = {};
-
-    for (var w in state.memoryWords.entries) {
-      if (w.value.isFullyFlipped) {
-        flippedWords.addEntries({w});
-      }
-    }
-
-    if (flippedWords.entries.length % 2 == 0) {
-
-      final isMatched = flippedWords.entries.last.value.word.english ==
-          flippedWords.entries
-              .elementAt(flippedWords.entries.length - 2)
-              .value
-              .word
-              .english;
-
-        if (isMatched) {
-        var updatedWords = state.memoryWords;
-        for (var w in updatedWords.entries) {
-          updatedWords.update(
-              w.key,
-              (value) => MemoryModel(
-                  word: w.value.word,
-                  showChinese: w.value.showChinese,
-                  isAnswered: w.value.isAnswered));
-        }
-        for (int i = flippedWords.length - 2; i < flippedWords.length; i++) {
-          updatedWords.update(
-              flippedWords.entries.elementAt(i).key,
-              (value) => MemoryModel(
-                  word: updatedWords.entries.elementAt(i).value.word,
-                  showChinese:
-                      updatedWords.entries.elementAt(i).value.showChinese,
-                  isAnswered: true));
-        }
+    if (state.tappedWords.entries.length == 2) {
+      if (state.tappedWords.entries.elementAt(0).value.word.english ==
+          state.tappedWords.entries.elementAt(1).value.word.english) {
+        state = state.copyWith(answeredCorrectly: {
+          ...state.answeredCorrectly,
+          ...state.tappedWords.keys
+        }, tappedWords: {}, ignoreTaps: false);
       } else {
-        for (var w in flippedWords.entries) {
-          updatedWords.update(
-            w.key,
-            (value) => MemoryModel(
-              word: w.value.word,
-              isHalfFlipped: true,
-              isFullyFlipped: true,
-              showChinese: w.value.showChinese,
-              reverseFlip: true,
-            ),
-          );
-        }
+
+        state = state.copyWith(reverseFlip: true, canFlip: true, ignoreTaps: true);
       }
+    }else{
+
+      state = state.copyWith(ignoreTaps: false);
     }
-    state = state.copyWith(memoryWords: updatedWords);
   }
 
-  reverseFlipHalfCompleted({required MapEntry<int, MemoryModel> memoryWord}) {
-    Map<int, MemoryModel> updatedWords = state.memoryWords;
-    for (var w in updatedWords.entries) {
-      if (w.value.reverseFlip) {
-        updatedWords.update(
-            w.key,
-            (value) => MemoryModel(
-                word: w.value.word, showChinese: w.value.showChinese));
-      }
-    }
-    state = state.copyWith(memoryWords: updatedWords);
-  }
+  onReverseFlip() {
 
-  onFlippedBack({required MapEntry<int, MemoryModel> memoryWord}) {
+
+
     var updatedWords = state.memoryWords;
-
     for (var w in updatedWords.entries) {
-      updatedWords.update(
+      if (!state.answeredCorrectly.contains(w.key)) {
+        updatedWords.update(
           w.key,
           (value) => MemoryModel(
-              word: w.value.word, showChinese: w.value.showChinese));
+            word: w.value.word,
+            showChinese: w.value.showChinese,
+            flipCard: false,
+          ),
+        );
+      }
     }
 
-    state = state.copyWith(memoryWords: updatedWords);
+    state = state.copyWith(
+        memoryWords: updatedWords,
+        canFlip: true, reverseFlip: false,
+        tappedWords: {}, ignoreTaps: false);
+
   }
+
+
+
+
 }
 
 final memoryProvider = StateNotifierProvider<MemoryNotifier, MemoryState>(
   (ref) => MemoryNotifier(
     MemoryState(
-      allSelectedWords: {},
-      memoryWords: {},
-      flipBackTiles: false,
+        allSelectedWords: {},
+        memoryWords: {},
+        tappedWords: {},
+        answeredCorrectly: {},
+        canFlip: false,
+        reverseFlip: false, ignoreTaps: false,
     ),
   ),
 );
