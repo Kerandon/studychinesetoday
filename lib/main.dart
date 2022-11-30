@@ -2,9 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/sections/home_page/home_page_2.dart';
+import 'package:studychinesetoday/sections/home_page/home_page.dart';
 import 'configs/app_theme.dart';
-import 'sections/home_page/home_page.dart';
+import 'sections/home_page/home_page_redundant.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: const HomePage2(),
+      home: const HomePage(),
     );
   }
 }

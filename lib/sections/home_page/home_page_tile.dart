@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:studychinesetoday/configs/constants.dart';
 
-import '../../configs/app_colors.dart';
-import '../../configs/app_theme.dart';
-
 class HomePageTile extends StatelessWidget {
   const HomePageTile({
     super.key,

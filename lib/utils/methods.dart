@@ -9,8 +9,8 @@ import '../state_management/topics_data.dart';
 Future<String> getRandomTopicURL({required TopicData topic}) async {
   final ref = FirebaseStorage.instance.ref('topics/${topic.english}');
   final all = await ref.listAll();
-  final r = Random().nextInt(all.items.length);
-  return await all.items[r].getDownloadURL();
+  //final r = Random().nextInt(all.items.length);
+  return await all.items[0].getDownloadURL();
 }
 
 Future<String> getWordURL(

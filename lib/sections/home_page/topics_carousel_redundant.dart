@@ -3,7 +3,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:hooks_riverpod/hooks_riverpod.dart';
 // import 'package:studychinesetoday/configs/constants.dart';
-// import 'package:studychinesetoday/sections/home_page/topic_thumbail.dart';
+// import 'package:studychinesetoday/sections/home_page/topic_thumbail_redundant.dart';
 // import 'package:studychinesetoday/state_management/topics_data.dart';
 //
 // import '../pages/all_topics_page.dart';
