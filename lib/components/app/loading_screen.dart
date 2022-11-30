@@ -8,9 +8,8 @@ class LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+        width: double.infinity,
         height: double.infinity,
-        color: Colors.amber,
         child: const Center(child: CircularProgressIndicator()));
   }
 }

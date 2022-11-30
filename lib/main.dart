@@ -2,16 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:studychinesetoday/sections/home_page/home_page_2.dart';
 import 'configs/app_theme.dart';
 import 'sections/home_page/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
 
   const firebaseOptions = FirebaseOptions(
       apiKey: "AIzaSyA9KHSBDB5GjNU33hwle4vFXw_00soMpaA",
@@ -23,8 +20,15 @@ Future<void> main() async {
       measurementId: "G-FP8PC242MC");
 
   await Firebase.initializeApp(
-    name: "studychinesetoday",
-      options: firebaseOptions);
+    name: 'studychinesetoday',
+    options: firebaseOptions,
+  );
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
 
   runApp(
     const ProviderScope(
@@ -41,7 +45,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: const HomePage(),
+      home: const HomePage2(),
     );
   }
 }

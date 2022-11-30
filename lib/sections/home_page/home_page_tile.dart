@@ -1,29 +1,35 @@
-
 import 'package:flutter/material.dart';
-import 'package:studychinesetoday/configs/app_theme.dart';
 import 'package:studychinesetoday/configs/constants.dart';
 
 import '../../configs/app_colors.dart';
+import '../../configs/app_theme.dart';
 
 class HomePageTile extends StatelessWidget {
   const HomePageTile({
     super.key,
     required this.title,
+    required this.callback,
   });
 
   final String title;
+  final VoidCallback callback;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(28.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.offWhite,
-          borderRadius: BorderRadius.circular(kRadius),
-          boxShadow: kBoxShadow,
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(kRadius))),
+          onPressed: callback,
+          child: Center(
+              child: Text(
+            title,
+            style: Theme.of(context).textTheme.displaySmall,
+          )),
         ),
-        child: Center(child: Text(title, style: Theme.of(context).textTheme.displayMedium,)),
       ),
     );
   }

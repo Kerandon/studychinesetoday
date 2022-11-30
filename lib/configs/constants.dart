@@ -7,5 +7,5 @@ const kTopicData = 'topicdata';
 const kPinyin = 'pinyin';
 const kCharacter = 'character';
 const kShadow =
-    BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 3);
+    BoxShadow(color: Colors.black, offset: Offset(3, 3), blurRadius: 3);
 const kHomePageTileWidth = 0.80;

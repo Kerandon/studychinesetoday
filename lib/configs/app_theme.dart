@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
+import 'constants.dart';
 
 final appTheme = ThemeData(
     textTheme: TextTheme(
@@ -29,3 +30,11 @@ TextStyle appTextStyle() {
 const kBoxShadow = [
   BoxShadow(color: Colors.black12, offset: Offset(3, 3), blurRadius: 5)
 ];
+
+BoxDecoration kBuildGreyBoxDecoration({Color color = AppColors.lightGrey}) {
+  return BoxDecoration(
+    boxShadow: kBoxShadow,
+      color: color,
+      borderRadius: BorderRadius.circular(kRadius)
+  );
+}

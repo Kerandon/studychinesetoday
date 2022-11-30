@@ -31,7 +31,9 @@ class _MemoryPageState extends ConsumerState<MemoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final allWordsProvider = FutureProvider.autoDispose<Map<int, MemoryModel>>((ref) {
+
+
+    final AutoDisposeFutureProvider allWordsProvider = FutureProvider.autoDispose<Map<int, MemoryModel>>((ref) {
       final memoryState = ref.watch(memoryProvider);
       return memoryState.memoryWords;
     });
