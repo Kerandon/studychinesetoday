@@ -33,8 +33,11 @@ const kBoxShadow = [
 
 BoxDecoration kBuildGreyBoxDecoration({Color color = AppColors.lightGrey}) {
   return BoxDecoration(
-    boxShadow: kBoxShadow,
+      boxShadow: kBoxShadow,
       color: color,
-      borderRadius: BorderRadius.circular(kRadius)
-  );
+      borderRadius: BorderRadius.circular(kRadius),
+      border: Border.all(
+        color: Colors.white,
+        width: 8,
+      ));
 }

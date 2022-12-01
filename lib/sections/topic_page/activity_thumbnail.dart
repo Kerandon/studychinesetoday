@@ -6,9 +6,9 @@ import '../../configs/app_colors.dart';
 import '../../configs/constants.dart';
 import '../../models/topic_data.dart';
 import '../../models/word_data.dart';
-import '../../sections/games/flashcards/flash_cards_page.dart';
-import '../../sections/games/flashcards/flashcard_provider.dart';
-import '../app/loading_helper.dart';
+import '../games/flashcards/flash_cards_page.dart';
+import '../games/flashcards/flashcard_provider.dart';
+import '../../components/app/loading_helper.dart';
 
 class ActivityThumbnail extends ConsumerWidget {
   const ActivityThumbnail({

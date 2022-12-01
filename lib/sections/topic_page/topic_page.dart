@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studychinesetoday/components/topic/activity_thumbnail.dart';
+import 'package:studychinesetoday/sections/topic_page/activity_thumbnail.dart';
 import '../../models/topic_data.dart';
 
 class TopicPage extends StatelessWidget {

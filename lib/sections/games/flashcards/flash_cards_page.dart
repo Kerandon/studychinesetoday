@@ -8,8 +8,7 @@ import 'package:studychinesetoday/utils/enums/session_type.dart';
 import 'package:studychinesetoday/utils/enums/slide_direction.dart';
 import '../../../../models/topic_data.dart';
 import '../../../../models/word_data.dart';
-import '../../home_page/home_page_redundant.dart';
-import '../../home_page/home_page.dart';
+import '../../home_page/home_page_main.dart';
 import 'flash_card.dart';
 import 'flashcard_provider.dart';
 
@@ -93,7 +92,7 @@ class _FlashcardsPageState extends ConsumerState<FlashcardsPage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
+              MaterialPageRoute(builder: (context) => const HomePageMain()),
             );
           },
           icon: const Icon(Icons.arrow_back),

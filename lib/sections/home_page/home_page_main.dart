@@ -5,14 +5,14 @@ import '../../state_management/topics_data.dart';
 import 'all_topics_carousel.dart';
 import 'home_page_activities_block.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePageMain extends ConsumerStatefulWidget {
+  const HomePageMain({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<HomePage> createState() => _HomePage2State();
+  ConsumerState<HomePageMain> createState() => _HomePage2State();
 }
 
-class _HomePage2State extends ConsumerState<HomePage> {
+class _HomePage2State extends ConsumerState<HomePageMain> {
   final ScrollController _scrollController = ScrollController();
 
   late final Future _allTopicsDataFuture;

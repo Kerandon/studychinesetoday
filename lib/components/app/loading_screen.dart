@@ -7,9 +7,12 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: const Center(child: CircularProgressIndicator()));
+    return const SizedBox(
+      width: double.infinity,
+      height: double.infinity,
+      child: Center(
+        child: LinearProgressIndicator(),
+      ),
+    );
   }
 }
