@@ -58,7 +58,9 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
             wordData: widget.wordData,
             hideUI: sentenceScramblerState.letterBlock.index == widget.index &&
                 sentenceScramblerState.isAnimatingBackToPosition &&
-                !widget.neverHideUI),
+                !widget.neverHideUI,
+                addShadow: false,
+        ),
       ),
     );
   }

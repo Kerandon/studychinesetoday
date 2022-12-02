@@ -28,13 +28,13 @@ class _CustomAnimationState extends State<CustomAnimation>
 
   @override
   void initState() {
-    _controller =
-        AnimationController(duration: const Duration(milliseconds: 1000), vsync: this)
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              widget.animationCompleted?.call();
-            }
-          });
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          widget.animationCompleted?.call();
+        }
+      });
 
     const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
     _springSimulation = SpringSimulation(spring, 0, 1, -20);

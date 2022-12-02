@@ -67,8 +67,8 @@ final sentenceScramblerProvider =
       droppedPosition: const Offset(0, 0),
       animate: false,
       letterBlock: const LetterBlock(
-          wordData: WordData(english: '', character: '', pinyin: ''),
-          index: 999),
+        wordData:
+        WordData(english: '', character: '', pinyin: ''), index: 0,),
       isAnimatingBackToPosition: false,
     ),
   ),
