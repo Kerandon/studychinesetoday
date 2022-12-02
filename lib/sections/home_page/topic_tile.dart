@@ -6,7 +6,7 @@ import '../../configs/app_colors.dart';
 import '../../configs/app_theme.dart';
 import '../../models/topic_data.dart';
 import '../../state_management/topics_data.dart';
-import '../../utils/methods.dart';
+import '../../utils/firebase_methods.dart';
 
 class TopicTile extends ConsumerStatefulWidget {
   const TopicTile({

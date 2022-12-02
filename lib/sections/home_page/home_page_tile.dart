@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:studychinesetoday/configs/constants.dart';
+import 'package:studychinesetoday/configs/constants_other.dart';
 
 class HomePageTile extends StatelessWidget {
   const HomePageTile({

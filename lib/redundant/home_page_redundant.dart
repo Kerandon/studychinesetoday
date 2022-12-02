@@ -4,9 +4,9 @@
 // import 'package:studychinesetoday/sections/home_page/topics_carousel_redundant.dart';
 // import 'package:studychinesetoday/configs/app_colors.dart';
 // import 'package:studychinesetoday/configs/app_theme.dart';
-// import 'package:studychinesetoday/configs/constants.dart';
+// import 'package:studychinesetoday/configs/constants_other.dart';
 // import 'package:studychinesetoday/state_management/topics_data.dart';
-// import 'package:studychinesetoday/utils/methods.dart';
+// import 'package:studychinesetoday/utils/firebase_methods.dart';
 //
 // import '../games/flashcards/flashcards_button.dart';
 // import '../games/memory/memory_page.dart';

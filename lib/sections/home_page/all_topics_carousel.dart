@@ -6,7 +6,7 @@ import 'package:studychinesetoday/sections/home_page/topic_tile.dart';
 
 import '../../components/app/loading_screen.dart';
 import '../../configs/app_theme.dart';
-import '../../configs/constants.dart';
+import '../../configs/constants_other.dart';
 import '../../models/topic_data.dart';
 import '../../state_management/topics_data.dart';
 

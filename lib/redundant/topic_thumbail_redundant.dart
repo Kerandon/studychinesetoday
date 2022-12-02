@@ -2,11 +2,11 @@
 // import 'package:flutter/material.dart';
 // import 'package:hooks_riverpod/hooks_riverpod.dart';
 // import 'package:studychinesetoday/sections/pages/topic_page.dart';
-// import 'package:studychinesetoday/utils/methods.dart';
+// import 'package:studychinesetoday/utils/firebase_methods.dart';
 //
 // import '../../components/app/display_image.dart';
 // import '../../configs/app_colors.dart';
-// import '../../configs/constants.dart';
+// import '../../configs/constants_other.dart';
 // import '../../models/topic_data.dart';
 //
 // class TopicThumbnail extends ConsumerStatefulWidget {

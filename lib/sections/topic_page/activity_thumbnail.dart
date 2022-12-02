@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/utils/enums/session_type.dart';
 import '../../configs/app_colors.dart';
-import '../../configs/constants.dart';
+import '../../configs/constants_other.dart';
 import '../../models/topic_data.dart';
 import '../../models/word_data.dart';
 import '../games/flashcards/flash_cards_page.dart';

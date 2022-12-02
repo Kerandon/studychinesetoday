@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/configs/constants.dart';
+import 'package:studychinesetoday/configs/constants_other.dart';
 import 'package:studychinesetoday/sections/games/flashcards/side_bar_flashcards.dart';
 import 'package:studychinesetoday/state_management/topics_data.dart';
 import 'package:studychinesetoday/utils/enums/card_stages.dart';

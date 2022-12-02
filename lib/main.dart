@@ -8,7 +8,6 @@ import 'configs/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-
   const firebaseOptions = FirebaseOptions(
       apiKey: "AIzaSyA9KHSBDB5GjNU33hwle4vFXw_00soMpaA",
       authDomain: "studychinesetoday-7b129.firebaseapp.com",
@@ -27,7 +26,6 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-
 
   runApp(
     const ProviderScope(

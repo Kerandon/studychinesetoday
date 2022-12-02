@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/utils/methods.dart';
+import 'package:studychinesetoday/utils/firebase_methods.dart';
 import '../../state_management/topics_data.dart';
 import 'all_topics_carousel.dart';
 import 'home_page_activities_block.dart';

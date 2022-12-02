@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/flip_animation.dart';
 import 'package:studychinesetoday/animations/shake_animation.dart';
-import 'package:studychinesetoday/configs/constants.dart';
+import 'package:studychinesetoday/configs/constants_other.dart';
 import 'package:studychinesetoday/utils/enums/flip_stage.dart';
 import 'package:studychinesetoday/sections/games/memory/memory_provider.dart';
 

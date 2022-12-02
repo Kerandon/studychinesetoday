@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:studychinesetoday/configs/constants.dart';
+import 'package:studychinesetoday/configs/constants_other.dart';
 import '../models/topic_data.dart';
 import '../models/word_data.dart';
 import '../state_management/topics_data.dart';
