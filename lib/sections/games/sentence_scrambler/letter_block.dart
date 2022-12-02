@@ -26,7 +26,7 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
 
   @override
   Widget build(BuildContext context) {
-    final sentenceScramblerState = ref.watch(sentenceScramblerProvider);
+    final sentenceScramblerState = ref.watch(sentenceAnimationProvider);
 
     return IgnorePointer(
       ignoring: sentenceScramblerState.isAnimatingBackToPosition,
@@ -37,7 +37,7 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
           addShadow: true,
         ),
         onDragEnd: (details) {
-          ref.read(sentenceScramblerProvider.notifier).animateBackToPosition(
+          ref.read(sentenceAnimationProvider.notifier).animateBackToPosition(
                 originalPosition:
                     getWidgetsGlobalPosition(positionKey: _positionKey),
                 droppedPosition: details.offset,

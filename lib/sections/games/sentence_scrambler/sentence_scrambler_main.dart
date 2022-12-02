@@ -25,9 +25,9 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
 
   @override
   Widget build(BuildContext context) {
-    final sentenceScramblerState = ref.watch(sentenceScramblerProvider);
+    final sentenceScramblerState = ref.watch(sentenceAnimationProvider);
     final sentenceScramblerNotifier =
-        ref.read(sentenceScramblerProvider.notifier);
+        ref.read(sentenceAnimationProvider.notifier);
 
     return Stack(
       children: [
