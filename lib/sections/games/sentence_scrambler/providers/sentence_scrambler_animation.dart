@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
 
-import '../../../models/word_data.dart';
-import 'letter_block.dart';
+import '../../../../models/word_data.dart';
+import '../components/letter_block.dart';
 
-class SentenceAnimateState {
+class SentenceAnimationState {
   final Offset originalPosition;
   final Offset droppedPosition;
   final bool animate;
   final LetterBlock letterBlock;
   final bool isAnimatingBackToPosition;
 
-  SentenceAnimateState({
+  SentenceAnimationState({
     required this.originalPosition,
     required this.droppedPosition,
     required this.animate,
@@ -19,14 +20,14 @@ class SentenceAnimateState {
     required this.isAnimatingBackToPosition,
   });
 
-  SentenceAnimateState copyWith({
+  SentenceAnimationState copyWith({
     Offset? originalPosition,
     Offset? droppedPosition,
     bool? animate,
     LetterBlock? letterBlock,
     bool? isAnimatingBackToPosition,
   }) {
-    return SentenceAnimateState(
+    return SentenceAnimationState(
       originalPosition: originalPosition ?? this.originalPosition,
       droppedPosition: droppedPosition ?? this.droppedPosition,
       animate: animate ?? this.animate,
@@ -37,8 +38,8 @@ class SentenceAnimateState {
   }
 }
 
-class SentenceAnimateNotifier extends StateNotifier<SentenceAnimateState> {
-  SentenceAnimateNotifier(SentenceAnimateState state) : super(state);
+class SentenceAnimationNotifier extends StateNotifier<SentenceAnimationState> {
+  SentenceAnimationNotifier(SentenceAnimationState state) : super(state);
 
   animateBackToPosition({
     required Offset originalPosition,
@@ -60,14 +61,14 @@ class SentenceAnimateNotifier extends StateNotifier<SentenceAnimateState> {
 }
 
 final sentenceAnimationProvider =
-    StateNotifierProvider<SentenceAnimateNotifier, SentenceAnimateState>(
-  (ref) => SentenceAnimateNotifier(
-    SentenceAnimateState(
+    StateNotifierProvider<SentenceAnimationNotifier, SentenceAnimationState>(
+  (ref) => SentenceAnimationNotifier(
+    SentenceAnimationState(
       originalPosition: const Offset(0, 0),
       droppedPosition: const Offset(0, 0),
       animate: false,
-      letterBlock: const LetterBlock(
-        wordData: WordData(english: '', character: '', pinyin: ''),
+      letterBlock: LetterBlock(
+        sentenceWord: SentenceWord(position: 1, wordData: WordData(english: "", character: "", pinyin: ""), isPlaced: false),
         index: 0,
       ),
       isAnimatingBackToPosition: false,

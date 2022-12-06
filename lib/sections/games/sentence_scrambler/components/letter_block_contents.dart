@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:studychinesetoday/configs/app_colors.dart';
 import 'package:studychinesetoday/configs/constants_other.dart';
 
-import '../../../models/word_data.dart';
+import '../../../../models/word_data.dart';
 
 class LetterBlockContents extends StatelessWidget {
   const LetterBlockContents({

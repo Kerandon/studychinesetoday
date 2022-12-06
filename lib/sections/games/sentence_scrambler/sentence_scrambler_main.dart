@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/spring_transition_animation.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/sentence_scrambler_provider.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_animation.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
+import '../../../configs/app_colors.dart';
 import '../../../models/word_data.dart';
-import 'bottom_buttons.dart';
-import 'landing_area.dart';
-import 'letter_block.dart';
+import 'components/bottom_buttons.dart';
+import 'components/landing_area.dart';
+import 'components/letter_block.dart';
 
 class SentenceScramblerMain extends ConsumerStatefulWidget {
   const SentenceScramblerMain({Key? key}) : super(key: key);
@@ -16,18 +19,24 @@ class SentenceScramblerMain extends ConsumerStatefulWidget {
 }
 
 class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
-  List<WordData> sentence = [
+  List<WordData> masterSentence = [
     const WordData(english: 'apples', character: "", pinyin: ""),
     const WordData(english: 'are', character: "", pinyin: ""),
     const WordData(english: "very", character: "", pinyin: ""),
     const WordData(english: "delicious", character: "", pinyin: "")
   ];
 
+  bool _isSetUpComplete = false;
+  Set<SentenceWord> _landingTiles = {};
+
   @override
   Widget build(BuildContext context) {
-    final sentenceScramblerState = ref.watch(sentenceAnimationProvider);
-    final sentenceScramblerNotifier =
-        ref.read(sentenceAnimationProvider.notifier);
+    final animationState = ref.watch(sentenceAnimationProvider);
+    final animationNotifier = ref.read(sentenceAnimationProvider.notifier);
+    final managerState = ref.watch(sentenceScramblerProvider);
+    final managerNotifier = ref.read(sentenceScramblerProvider.notifier);
+
+    _setUp(managerNotifier);
 
     return Stack(
       children: [
@@ -41,26 +50,32 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
             builder: (context, constraints) {
               final biggest = constraints.biggest;
               return Container(
-                color: Colors.amber,
+                color: AppColors.lightGrey,
                 child: Stack(
                   children: [
                     Align(
-                      alignment: Alignment.topCenter,
+                      alignment: Alignment(0,-1.0),
                       child: SizedBox(
-                        height: biggest.height * 0.20,
+                        width: biggest.width,
+                        height: biggest.height * 0.40,
                         child: LandingArea(),
                       ),
                     ),
                     Align(
-                      alignment: Alignment.center,
-                      child: Wrap(
-                        spacing: 22,
-                        runAlignment: WrapAlignment.center,
-                        children: List.generate(
-                          sentence.length,
-                          (index) => LetterBlock(
-                            wordData: sentence[index],
-                            index: index,
+                      alignment: Alignment(0,0.10),
+                      child: Container(
+                        height: biggest.height * 0.40,
+                        width: double.infinity,
+                        child: Wrap(
+                          spacing: 22,
+                          runAlignment: WrapAlignment.center,
+                          alignment: WrapAlignment.center,
+                          children: List.generate(
+                            managerState.currentSentence.length,
+                            (index) => LetterBlock(
+                              sentenceWord: managerState.currentSentence[index],
+                              index: index,
+                            ),
                           ),
                         ),
                       ),
@@ -78,20 +93,34 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
           ),
         ),
         Opacity(
-          opacity: sentenceScramblerState.isAnimatingBackToPosition ? 1 : 0,
+          opacity: animationState.isAnimatingBackToPosition ? 1 : 0,
           child: CustomAnimation(
-            startOffset: sentenceScramblerState.droppedPosition,
-            endOffset: sentenceScramblerState.originalPosition,
-            animate: sentenceScramblerState.animate &&
-                sentenceScramblerState.isAnimatingBackToPosition,
-            child: sentenceScramblerState.letterBlock,
+            startOffset: animationState.droppedPosition,
+            endOffset: animationState.originalPosition,
+            animate: animationState.animate &&
+                animationState.isAnimatingBackToPosition,
+            child: animationState.letterBlock,
             animationCompleted: () {
-              sentenceScramblerNotifier.setAnimationStatus(
-                  isAnimatingBack: false);
+              animationNotifier.setAnimationStatus(isAnimatingBack: false);
             },
           ),
         )
       ],
     );
+  }
+
+  void _setUp(SentenceScramblerNotifier managerNotifier) {
+    if (!_isSetUpComplete) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        List<SentenceWord> fullSentence = [];
+        for (int i = 0; i < masterSentence.length; i++) {
+          fullSentence.add(SentenceWord(
+              wordData: masterSentence.elementAt(i), position: i, isPlaced: false));
+        }
+        fullSentence.shuffle();
+        managerNotifier.setCurrentSentence(sentence: fullSentence);
+        _isSetUpComplete = true;
+      });
+    }
   }
 }
