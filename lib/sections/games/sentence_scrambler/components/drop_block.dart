@@ -1,30 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:studychinesetoday/configs/app_theme.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/configs/constants_other.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
-
+import 'package:studychinesetoday/utils/enums/answer_state.dart';
+import 'package:studychinesetoday/utils/methods_other.dart';
 import '../../../../configs/app_colors.dart';
 import '../../../../models/word_data.dart';
+import '../providers/sentence_scrambler_manager.dart';
 
-class DropBlock extends StatelessWidget {
+class DropBlock extends ConsumerStatefulWidget {
   const DropBlock({
     super.key,
+    required this.position,
   });
+
+  final int position;
+
+  @override
+  ConsumerState<DropBlock> createState() => _DropBlockState();
+}
+
+class _DropBlockState extends ConsumerState<DropBlock> {
+  final _widgetKey = GlobalKey();
+  Offset _offsetPosition = const Offset(0, 0);
+
+  SentenceWord? sentenceWord;
 
   @override
   Widget build(BuildContext context) {
+    final notifier = ref.read(sentenceScramblerProvider.notifier);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _offsetPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
+    });
+
     WordData? wordData;
+
     final size = MediaQuery.of(context).size;
 
     return DragTarget<SentenceWord>(
       onWillAccept: (details) {
         return true;
       },
-      onAccept: (details) {
-        wordData = details.wordData;
+      onAccept: (word) {
+        sentenceWord = word;
+
+        wordData = word.wordData;
+        notifier.wordPlaced(
+          sentenceWord: SentenceWord(
+              wordData: word.wordData,
+              correctPosition: word.correctPosition,
+              placedPosition: widget.position,
+              placedOffset: _offsetPosition),
+        );
       },
       builder: (context, _, __) {
         return FittedBox(
+          key: _widgetKey,
           fit: BoxFit.contain,
           child: SizedBox(
             height: size.height * 0.08,
@@ -35,17 +67,43 @@ class DropBlock extends StatelessWidget {
                         color: AppColors.mediumGrey,
                         borderRadius: BorderRadius.circular(kRadius)),
                   )
-                : Container(
-                    decoration: BoxDecoration(
-                        color: Colors.amber,
-                        borderRadius: BorderRadius.circular(kRadius)),
-                    child: Center(
-                      child: Text(
-                        wordData!.english,
-                        style: Theme.of(context).textTheme.displayMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                : Consumer(
+                    builder: (_, WidgetRef ref, ___) {
+                      final sentenceState =
+                          ref.watch(sentenceScramblerProvider);
+
+                      if (sentenceState.recallWords) {
+                        WidgetsBinding.instance.addPostFrameCallback(
+                          (timeStamp) {
+                            wordData = null;
+                            setState(() {});
+                          },
+                        );
+                      }
+
+                      Color tileColor = Colors.amber;
+                      if (sentenceState.allPlaced) {
+                        if (sentenceState.answerState == AnswerState.correct) {
+                          tileColor = Colors.green;
+                        }
+                        if (sentenceState.answerState ==
+                            AnswerState.incorrect) {
+                          tileColor = Colors.red;
+                        }
+                      }
+                      return Container(
+                        decoration: BoxDecoration(
+                            color: tileColor,
+                            borderRadius: BorderRadius.circular(kRadius)),
+                        child: Center(
+                          child: Text(
+                            wordData!.english,
+                            style: Theme.of(context).textTheme.displayMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    },
                   ),
           ),
         );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
-class CustomAnimation extends StatefulWidget {
-  const CustomAnimation(
+class SpringTranslationAnimation extends StatefulWidget {
+  const SpringTranslationAnimation(
       {Key? key,
       required this.child,
       required this.animate,
@@ -18,10 +18,10 @@ class CustomAnimation extends StatefulWidget {
   final VoidCallback? animationCompleted;
 
   @override
-  State<CustomAnimation> createState() => _CustomAnimationState();
+  State<SpringTranslationAnimation> createState() => _SpringTranslationAnimationState();
 }
 
-class _CustomAnimationState extends State<CustomAnimation>
+class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late final SpringSimulation _springSimulation;
@@ -29,24 +29,25 @@ class _CustomAnimationState extends State<CustomAnimation>
   @override
   void initState() {
     _controller = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this)
+        duration: const Duration(milliseconds: 2000), vsync: this)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           widget.animationCompleted?.call();
         }
       });
 
-    const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
-    _springSimulation = SpringSimulation(spring, 0, 1, -20);
+    // const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
+    // _springSimulation = SpringSimulation(spring, 0, 1, -20);
 
     super.initState();
   }
 
   @override
-  void didUpdateWidget(covariant CustomAnimation oldWidget) {
+  void didUpdateWidget(covariant SpringTranslationAnimation oldWidget) {
     if (widget.animate) {
       _controller.reset();
-      _controller.animateWith(_springSimulation);
+      _controller.forward();
+      //_controller.animateWith(_springSimulation);
     }
     super.didUpdateWidget(oldWidget);
   }

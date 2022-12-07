@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_animation.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
 import '../providers/sentence_scrambler_manager.dart';
 import 'letter_block_contents.dart';
@@ -24,37 +23,38 @@ class LetterBlock extends ConsumerStatefulWidget {
 
 class _LetterBlockState extends ConsumerState<LetterBlock> {
   final _widgetKey = GlobalKey();
-  Size _size = Size(0, 0);
+  Size _size = const Size(0, 0);
+  Offset _originalPosition = const Offset(0, 0);
   bool _isPlaced = false;
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _size = getSize(key: _widgetKey);
-    });
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-  }
+  bool _haveSetUp = false;
 
   @override
   Widget build(BuildContext context) {
-    final animationState = ref.watch(sentenceAnimationProvider);
-    final managerState = ref.watch(sentenceScramblerProvider);
-    final managerNotifier = ref.read(sentenceScramblerProvider.notifier);
+    // final animationState = ref.watch(sentenceAnimationProvider);
+    final state = ref.watch(sentenceScramblerProvider);
+    final notifier = ref.read(sentenceScramblerProvider.notifier);
+
+    if (!_haveSetUp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _size = getWidgetSize(key: _widgetKey);
+        _originalPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
+        notifier.setBlockOriginalPosition(
+            sentenceWord: widget.sentenceWord, offsetPosition:
+        _originalPosition
+        );
+        _haveSetUp = true;
+      });
+    }
 
     SentenceWord? sentenceWord;
-    for (var w in managerState.currentSentence) {
-      if (w.position == widget.sentenceWord.position) {
+    for (var w in state.currentSentence) {
+      if (w.correctPosition == widget.sentenceWord.correctPosition) {
         sentenceWord = w;
       }
     }
 
-    _isPlaced = sentenceWord?.isPlaced ?? false;
+    _isPlaced = sentenceWord?.placedPosition != null;
+
 
     return _isPlaced
         ? SizedBox(
@@ -63,31 +63,44 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
           )
         : IgnorePointer(
             key: _widgetKey,
-            ignoring: animationState.isAnimatingBackToPosition,
+            ignoring: false,
+            //animationState.isAnimatingBackToPosition,
             child: Draggable<SentenceWord>(
               data: widget.sentenceWord,
               feedback: LetterBlockContents(
                 wordData: widget.sentenceWord.wordData,
                 addShadow: true,
               ),
+              onDragStarted: (){
+                print('drag started ${sentenceWord!.wordData.english}');
+              },
               onDragEnd: (details) {
                 if (details.wasAccepted) {
-                  managerNotifier.wordAccepted(
-                      sentenceWord: widget.sentenceWord);
+
+
+
+
                 } else {
-                  ref
-                      .read(sentenceAnimationProvider.notifier)
-                      .animateBackToPosition(
-                        originalPosition:
-                            getWidgetsGlobalPosition(positionKey: _widgetKey),
-                        droppedPosition: details.offset,
-                        animate: true,
-                        letterBlock: LetterBlock(
-                          sentenceWord: widget.sentenceWord,
-                          index: widget.index,
-                          neverHideUI: true,
-                        ),
-                      );
+                  notifier.blockDropped(sentenceWord: widget.sentenceWord,
+                      droppedOffset: details.offset);
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    notifier.recallWords(recall: true);
+                  });
+
+
+
+                  // ref
+                  //     .read(sentenceAnimationProvider.notifier)
+                  //     .animateBackToPosition(
+                  //       originalPosition: _position,
+                  //       droppedPosition: details.offset,
+                  //       animate: true,
+                  //       letterBlock: LetterBlock(
+                  //         sentenceWord: widget.sentenceWord,
+                  //         index: widget.index,
+                  //         neverHideUI: true,
+                  //       ),
+                  //     );
                 }
               },
               childWhenDragging: LetterBlockContents(
@@ -96,21 +109,14 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
               ),
               child: LetterBlockContents(
                 wordData: widget.sentenceWord.wordData,
-                hideUI: animationState.letterBlock.index == widget.index &&
-                    animationState.isAnimatingBackToPosition &&
-                    !widget.neverHideUI,
+                hideUI: false,
+
+                // animationState.letterBlock.index == widget.index &&
+                //     animationState.isAnimatingBackToPosition &&
+                //     !widget.neverHideUI,
                 addShadow: false,
               ),
             ),
           );
-  }
-}
-
-Size getSize({required GlobalKey key}) {
-  if (key.currentContext != null) {
-    final renderBox = key.currentContext!.findRenderObject() as RenderBox;
-    return renderBox.size;
-  } else {
-    return const Size(0, 0);
   }
 }

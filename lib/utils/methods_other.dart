@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
-Offset getWidgetsGlobalPosition({required GlobalKey positionKey}) {
+Offset getWidgetGlobalPosition({required GlobalKey positionKey}) {
   RenderBox renderBox =
   positionKey.currentContext?.findRenderObject() as RenderBox;
   return renderBox.localToGlobal(Offset.zero);
+}
+
+Size getWidgetSize({required GlobalKey key}) {
+  if (key.currentContext != null) {
+    final renderBox = key.currentContext!.findRenderObject() as RenderBox;
+    return renderBox.size;
+  } else {
+    return const Size(0, 0);
+  }
 }

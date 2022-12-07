@@ -1,16 +1,18 @@
-import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:studychinesetoday/models/word_data.dart';
 
-class SentenceWord extends Equatable {
-
+class SentenceWord {
   final WordData wordData;
-  int position;
-  bool isPlaced;
+  int correctPosition;
+  int? placedPosition;
+  Offset? originalOffset;
+  Offset? placedOffset;
 
-  SentenceWord({required this.wordData, required this.position, required this.isPlaced});
-
-  @override
-  List<Object> get props => [position];
-
-
+  SentenceWord({
+    required this.wordData,
+    required this.correctPosition,
+    this.placedPosition,
+    this.originalOffset,
+    this.placedOffset,
+  });
 }

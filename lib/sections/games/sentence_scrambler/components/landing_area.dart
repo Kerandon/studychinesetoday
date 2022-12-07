@@ -25,7 +25,7 @@ class _LandingAreaState extends State<LandingArea> {
           spacing: 12,
           children: List.generate(
             numberOfWords,
-            (index) => const DropBlock(),
+            (index) => DropBlock(position: index,),
           ),
         ),
       ),
