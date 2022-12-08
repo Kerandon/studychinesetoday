@@ -7,6 +7,7 @@ class SentenceWord {
   int? placedPosition;
   Offset? originalOffset;
   Offset? placedOffset;
+  bool hideChildUI;
 
   SentenceWord({
     required this.wordData,
@@ -14,5 +15,6 @@ class SentenceWord {
     this.placedPosition,
     this.originalOffset,
     this.placedOffset,
+    this.hideChildUI = false,
   });
 }

@@ -26,25 +26,15 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
   Size _size = const Size(0, 0);
   Offset _originalPosition = const Offset(0, 0);
   bool _isPlaced = false;
+  bool _hideChildUI = false;
   bool _haveSetUp = false;
 
   @override
   Widget build(BuildContext context) {
-    // final animationState = ref.watch(sentenceAnimationProvider);
     final state = ref.watch(sentenceScramblerProvider);
     final notifier = ref.read(sentenceScramblerProvider.notifier);
 
-    if (!_haveSetUp) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _size = getWidgetSize(key: _widgetKey);
-        _originalPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
-        notifier.setBlockOriginalPosition(
-            sentenceWord: widget.sentenceWord, offsetPosition:
-        _originalPosition
-        );
-        _haveSetUp = true;
-      });
-    }
+    _getSizeAndPosition(notifier);
 
     SentenceWord? sentenceWord;
     for (var w in state.currentSentence) {
@@ -53,10 +43,10 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
       }
     }
 
-    _isPlaced = sentenceWord?.placedPosition != null;
+    _isPlaced = sentenceWord!.placedPosition != null;
+    _hideChildUI = sentenceWord.hideChildUI;
 
-
-    return _isPlaced
+    return _isPlaced || _hideChildUI
         ? SizedBox(
             width: _size.width,
             height: _size.height,
@@ -64,43 +54,19 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
         : IgnorePointer(
             key: _widgetKey,
             ignoring: false,
-            //animationState.isAnimatingBackToPosition,
             child: Draggable<SentenceWord>(
               data: widget.sentenceWord,
               feedback: LetterBlockContents(
                 wordData: widget.sentenceWord.wordData,
                 addShadow: true,
               ),
-              onDragStarted: (){
-                print('drag started ${sentenceWord!.wordData.english}');
-              },
               onDragEnd: (details) {
-                if (details.wasAccepted) {
-
-
-
-
-                } else {
-                  notifier.blockDropped(sentenceWord: widget.sentenceWord,
-                      droppedOffset: details.offset);
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    notifier.recallWords(recall: true);
-                  });
-
-
-
-                  // ref
-                  //     .read(sentenceAnimationProvider.notifier)
-                  //     .animateBackToPosition(
-                  //       originalPosition: _position,
-                  //       droppedPosition: details.offset,
-                  //       animate: true,
-                  //       letterBlock: LetterBlock(
-                  //         sentenceWord: widget.sentenceWord,
-                  //         index: widget.index,
-                  //         neverHideUI: true,
-                  //       ),
-                  //     );
+                if (!details.wasAccepted) {
+                  notifier.blockDragCanceled(
+                    sentenceWord: widget.sentenceWord,
+                    droppedOffset: details.offset,
+                  );
+                      notifier.recallDroppedWord(recall: true);
                 }
               },
               childWhenDragging: LetterBlockContents(
@@ -110,13 +76,22 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
               child: LetterBlockContents(
                 wordData: widget.sentenceWord.wordData,
                 hideUI: false,
-
-                // animationState.letterBlock.index == widget.index &&
-                //     animationState.isAnimatingBackToPosition &&
-                //     !widget.neverHideUI,
                 addShadow: false,
               ),
             ),
           );
+  }
+
+  void _getSizeAndPosition(SentenceScramblerNotifier notifier) {
+    if (!_haveSetUp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _size = getWidgetSize(key: _widgetKey);
+        _originalPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
+        notifier.setBlockOriginalPosition(
+            sentenceWord: widget.sentenceWord,
+            offsetPosition: _originalPosition);
+        _haveSetUp = true;
+      });
+    }
   }
 }

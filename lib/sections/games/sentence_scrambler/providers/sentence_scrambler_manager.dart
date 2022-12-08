@@ -7,26 +7,30 @@ class SentenceScramblerState {
   final List<SentenceWord> currentSentence;
   final bool allPlaced;
   final AnswerState answerState;
-  final bool recallWords;
+  final bool recallDroppedWord;
+  final bool recallAllWords;
 
   SentenceScramblerState({
     required this.currentSentence,
     required this.allPlaced,
     required this.answerState,
-    required this.recallWords,
+    required this.recallDroppedWord,
+    required this.recallAllWords,
   });
 
   SentenceScramblerState copyWith({
     List<SentenceWord>? currentSentence,
     bool? allPlaced,
     AnswerState? answerState,
-    bool? recallWords,
+    bool? recallDroppedWord,
+    bool? recallAllWords,
   }) {
     return SentenceScramblerState(
       currentSentence: currentSentence ?? this.currentSentence,
       allPlaced: allPlaced ?? this.allPlaced,
       answerState: answerState ?? this.answerState,
-      recallWords: recallWords ?? this.recallWords,
+      recallDroppedWord: recallDroppedWord ?? this.recallDroppedWord,
+      recallAllWords: recallAllWords ?? this.recallAllWords,
     );
   }
 }
@@ -44,87 +48,83 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
 
     for (var w in currentSentence) {
       if (w.correctPosition == sentenceWord.correctPosition) {
-            w = sentenceWord;
-            w.originalOffset = offsetPosition;
+        w = sentenceWord;
+        w.originalOffset = offsetPosition;
       }
     }
 
     state = state.copyWith(currentSentence: currentSentence);
   }
 
-  void blockDropped({required SentenceWord sentenceWord, required Offset droppedOffset}){
+  void blockDragCanceled(
+      {required SentenceWord sentenceWord, required Offset droppedOffset}) {
     List<SentenceWord> currentSentence = state.currentSentence;
 
     for (var w in currentSentence) {
       if (w.correctPosition == sentenceWord.correctPosition) {
         w.placedOffset = droppedOffset;
+        w.placedPosition = null;
+        w.hideChildUI = true;
       }
     }
-
-
-
     state = state.copyWith(currentSentence: currentSentence);
-
-    for(var w in state.currentSentence){
-      print('blocks dropped ${w.wordData.english} and original pos ${w.originalOffset} and dropped pos ${w.placedOffset}');
-    }
-
   }
 
-  void wordPlaced(
-      {required SentenceWord sentenceWord}) {
-
+  void wordAccepted({required SentenceWord sentenceWord}) {
     List<SentenceWord> currentSentence = state.currentSentence;
 
     for (var w in currentSentence) {
       if (w.correctPosition == sentenceWord.correctPosition) {
-            w.placedPosition = sentenceWord.placedPosition;
-            w.placedOffset = sentenceWord.placedOffset;
+        w.placedPosition = sentenceWord.placedPosition;
+        w.placedOffset = sentenceWord.placedOffset;
       }
     }
 
-    final allPlaced =
+    final allAccepted =
         currentSentence.every((element) => element.placedPosition != null);
 
-    state =
-        state.copyWith(currentSentence: currentSentence, allPlaced: allPlaced);
-
+    state = state.copyWith(
+        currentSentence: currentSentence, allPlaced: allAccepted);
   }
 
   void checkAnswer() {
-    final correct = state.currentSentence
+    final isCorrect = state.currentSentence
         .every((element) => element.placedPosition == element.correctPosition);
     state = state.copyWith(
-        answerState: correct ? AnswerState.correct : AnswerState.incorrect);
+        answerState: isCorrect ? AnswerState.correct : AnswerState.incorrect);
   }
 
-  void recallWords({required bool recall}) {
-    state = state.copyWith(recallWords: recall);
+  void recallDroppedWord({required bool recall}) {
+    state = state.copyWith(recallDroppedWord: recall);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        state = state.copyWith(recallDroppedWord: recall);
+      },
+    );
   }
 
-  recallAnimationCompleted({required List<SentenceWord> words}){
+  void recallAllWords({required bool recall}) {
+    state = state.copyWith(recallAllWords: recall);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        state = state.copyWith(recallAllWords: recall);
+      },
+    );
+  }
+
+  recallAnimationCompleted({required List<SentenceWord> words}) {
     List<SentenceWord> currentSentence = state.currentSentence;
-
-    for(var c in currentSentence){
-      for(var w in words){
-        if(c.correctPosition == w.correctPosition){
-
+    for (var c in currentSentence) {
+      c.hideChildUI = false;
+      for (var w in words) {
+        if (c.correctPosition == w.correctPosition) {
           c.placedPosition = null;
-          w.placedOffset = null;
-
+          c.placedOffset = null;
         }
       }
     }
-
-    // for(var w in currentSentence){
-    //   if(w.correctPosition == words.where((element) => element.correctPosition))){
-    //     w.placedPosition = null;
-    //     w.placedOffset = null;
-    //   }
-    // }
     state = state.copyWith(currentSentence: currentSentence);
   }
-
 }
 
 final sentenceScramblerProvider =
@@ -134,7 +134,8 @@ final sentenceScramblerProvider =
       currentSentence: [],
       allPlaced: false,
       answerState: AnswerState.notAnswered,
-      recallWords: false,
+      recallDroppedWord: false,
+      recallAllWords: false,
     ),
   ),
 );

@@ -23,35 +23,31 @@ class DropBlock extends ConsumerStatefulWidget {
 class _DropBlockState extends ConsumerState<DropBlock> {
   final _widgetKey = GlobalKey();
   Offset _offsetPosition = const Offset(0, 0);
-
-  SentenceWord? sentenceWord;
+  WordData? wordData;
 
   @override
   Widget build(BuildContext context) {
-    final notifier = ref.read(sentenceScramblerProvider.notifier);
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _offsetPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
-    });
-
-    WordData? wordData;
-
     final size = MediaQuery.of(context).size;
+    final notifier = ref.read(sentenceScramblerProvider.notifier);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        _offsetPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
+      },
+    );
 
     return DragTarget<SentenceWord>(
-      onWillAccept: (details) {
+      onWillAccept: (word) {
         return true;
       },
       onAccept: (word) {
-        sentenceWord = word;
-
         wordData = word.wordData;
-        notifier.wordPlaced(
+        notifier.wordAccepted(
           sentenceWord: SentenceWord(
-              wordData: word.wordData,
-              correctPosition: word.correctPosition,
-              placedPosition: widget.position,
-              placedOffset: _offsetPosition),
+            wordData: word.wordData,
+            correctPosition: word.correctPosition,
+            placedPosition: widget.position,
+            placedOffset: _offsetPosition,
+          ),
         );
       },
       builder: (context, _, __) {
@@ -72,7 +68,7 @@ class _DropBlockState extends ConsumerState<DropBlock> {
                       final sentenceState =
                           ref.watch(sentenceScramblerProvider);
 
-                      if (sentenceState.recallWords) {
+                      if (sentenceState.recallAllWords) {
                         WidgetsBinding.instance.addPostFrameCallback(
                           (timeStamp) {
                             wordData = null;
@@ -81,16 +77,8 @@ class _DropBlockState extends ConsumerState<DropBlock> {
                         );
                       }
 
-                      Color tileColor = Colors.amber;
-                      if (sentenceState.allPlaced) {
-                        if (sentenceState.answerState == AnswerState.correct) {
-                          tileColor = Colors.green;
-                        }
-                        if (sentenceState.answerState ==
-                            AnswerState.incorrect) {
-                          tileColor = Colors.red;
-                        }
-                      }
+                      Color tileColor = _setResultColor(sentenceState);
+
                       return Container(
                         decoration: BoxDecoration(
                             color: tileColor,
@@ -109,5 +97,19 @@ class _DropBlockState extends ConsumerState<DropBlock> {
         );
       },
     );
+  }
+
+  Color _setResultColor(SentenceScramblerState sentenceState) {
+    Color tileColor = Colors.amber;
+
+    if (sentenceState.allPlaced) {
+      if (sentenceState.answerState == AnswerState.correct) {
+        tileColor = Colors.green;
+      }
+      if (sentenceState.answerState == AnswerState.incorrect) {
+        tileColor = Colors.red;
+      }
+    }
+    return tileColor;
   }
 }

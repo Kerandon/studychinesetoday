@@ -10,18 +10,16 @@ class LetterBlockContents extends StatelessWidget {
     required this.wordData,
     this.hideUI = false,
     this.addShadow = false,
-    this.animatingBackWidget = false,
   });
 
   final WordData wordData;
   final bool hideUI;
   final bool addShadow;
-  final bool animatingBackWidget;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: hideUI && !animatingBackWidget
+      decoration: hideUI
           ? BoxDecoration(
               border: Border.all(
                 color: Colors.transparent,

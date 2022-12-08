@@ -32,109 +32,115 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
   Widget build(BuildContext context) {
     final state = ref.watch(sentenceScramblerProvider);
     final notifier = ref.read(sentenceScramblerProvider.notifier);
-    // final animationState = ref.watch(sentenceAnimationProvider);
-    // final animationNotifier = ref.read(sentenceAnimationProvider.notifier);
 
     _setUp(notifier);
 
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'Sentence Scrambler',
+    int numberBlocksToAnimateBack = 0;
+
+    List<SentenceWord> words = [];
+
+    if (state.recallDroppedWord) {
+      for (var w in state.currentSentence) {
+        if (w.placedPosition == null && w.placedOffset != null) {
+          words = [w];
+          numberBlocksToAnimateBack = 1;
+        }
+      }
+    }
+
+    {
+      if (state.recallAllWords) {
+        numberBlocksToAnimateBack = state.currentSentence
+            .where((element) => element.placedOffset != null)
+            .length;
+
+        words = state.currentSentence
+            .where((element) => element.placedOffset != null)
+            .toList();
+      }
+    }
+
+    print(
+        'recall dropped ${state.recallDroppedWord} and all ${state.recallAllWords}');
+
+    return IgnorePointer(
+      ignoring: state.recallDroppedWord || state.recallAllWords,
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                'Sentence Scrambler',
+              ),
             ),
-          ),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              final biggest = constraints.biggest;
-              return Container(
-                color: AppColors.lightGrey,
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: const Alignment(0, -1.0),
-                      child: SizedBox(
-                        width: biggest.width,
-                        height: biggest.height * 0.40,
-                        child: const LandingArea(),
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                final biggest = constraints.biggest;
+                return Container(
+                  color: AppColors.lightGrey,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: const Alignment(0, -1.0),
+                        child: SizedBox(
+                          width: biggest.width,
+                          height: biggest.height * 0.40,
+                          child: const LandingArea(),
+                        ),
                       ),
-                    ),
-                    Align(
-                      alignment: const Alignment(0, 0.10),
-                      child: SizedBox(
-                        height: biggest.height * 0.40,
-                        width: double.infinity,
-                        child: Wrap(
-                          spacing: 22,
-                          runAlignment: WrapAlignment.center,
-                          alignment: WrapAlignment.center,
-                          children: List.generate(
-                            state.currentSentence.length,
-                            (index) => LetterBlock(
-                              sentenceWord: state.currentSentence[index],
-                              index: index,
+                      Align(
+                        alignment: const Alignment(0, 0.10),
+                        child: SizedBox(
+                          height: biggest.height * 0.40,
+                          width: double.infinity,
+                          child: Wrap(
+                            spacing: 22,
+                            runAlignment: WrapAlignment.center,
+                            alignment: WrapAlignment.center,
+                            children: List.generate(
+                              state.currentSentence.length,
+                              (index) => LetterBlock(
+                                sentenceWord: state.currentSentence[index],
+                                index: index,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                          height: biggest.height * 0.20,
-                          child: const BottomButtons()),
-                    ),
-                  ],
-                ),
-              );
-            },
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SizedBox(
+                            height: biggest.height * 0.20,
+                            child: const BottomButtons()),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        // Opacity(
-        //   opacity: animationState.isAnimatingBackToPosition ? 1 : 0,
-        //   child: SpringTranslationAnimation(
-        //     startOffset: animationState.droppedPosition,
-        //     endOffset: animationState.originalPosition,
-        //     animate: animationState.animate &&
-        //         animationState.isAnimatingBackToPosition,
-        //     child: animationState.letterBlock,
-        //     animationCompleted: () {
-        //       animationNotifier.setAnimationStatus(isAnimatingBack: false);
-        //     },
-        //   ),
-        // ),
-        ...List.generate(
-          state.currentSentence
-              .where((element) => element.placedOffset != null)
-              .length,
-          (index) {
-            List<SentenceWord> words = state.currentSentence
-                .where((element) => element.placedOffset != null)
-                .toList();
-
-            print(
-                'animate back ${words.length}  ${state.recallWords} ${words.elementAt(0).placedOffset} '
-                    '${words.elementAt(0).originalOffset}');
-
-            return SpringTranslationAnimation(
+          ...List.generate(
+            numberBlocksToAnimateBack,
+            (index) {
+              return SpringTranslationAnimation(
                 startOffset: words.elementAt(index).placedOffset,
                 endOffset: words.elementAt(index).originalOffset,
-                animate: state.recallWords,
+                animate: state.recallDroppedWord || state.recallAllWords,
                 animationCompleted: () {
-                  print('ANIM COMPLETED');
+                  notifier.recallDroppedWord(recall: false);
+                  notifier.recallAllWords(recall: false);
 
-                 notifier.recallWords(recall: false);
-
-                 notifier.recallAnimationCompleted(words: words);
+                  notifier.recallAnimationCompleted(words: words);
                 },
                 child: LetterBlockContents(
                   wordData: words.elementAt(index).wordData,
                   hideUI: false,
-                ));
-          },
-        ),
-      ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 

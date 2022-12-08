@@ -36,8 +36,8 @@ class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
         }
       });
 
-    // const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
-    // _springSimulation = SpringSimulation(spring, 0, 1, -20);
+    const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
+    _springSimulation = SpringSimulation(spring, 0, 1, -20);
 
     super.initState();
   }
@@ -46,8 +46,7 @@ class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
   void didUpdateWidget(covariant SpringTranslationAnimation oldWidget) {
     if (widget.animate) {
       _controller.reset();
-      _controller.forward();
-      //_controller.animateWith(_springSimulation);
+      _controller.animateWith(_springSimulation);
     }
     super.didUpdateWidget(oldWidget);
   }
