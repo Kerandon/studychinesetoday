@@ -6,13 +6,15 @@ class ShakeAnimation extends StatefulWidget {
   const ShakeAnimation({
     Key? key,
     required this.child,
-    required this.animate,
+    this.animateOnDemand = false,
+    this.animateOnStart = false,
     this.duration = 600,
     this.delay = 0,
   }) : super(key: key);
 
   final Widget child;
-  final bool animate;
+  final bool animateOnDemand;
+  final bool animateOnStart;
   final int duration;
   final int delay;
 
@@ -46,6 +48,8 @@ class _ShakeAnimationState extends State<ShakeAnimation>
       TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.90), weight: 7),
       TweenSequenceItem(tween: Tween<double>(begin: 0.90, end: 1.0), weight: 3),
     ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _controller.forward();
   }
 
   @override
@@ -56,7 +60,7 @@ class _ShakeAnimationState extends State<ShakeAnimation>
 
   @override
   void didUpdateWidget(covariant ShakeAnimation oldWidget) {
-    if (widget.animate) {
+    if (widget.animateOnDemand) {
       Future.delayed(
         Duration(milliseconds: widget.delay),
         () {

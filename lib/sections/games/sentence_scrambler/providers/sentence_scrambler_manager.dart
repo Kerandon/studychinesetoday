@@ -9,6 +9,7 @@ class SentenceScramblerState {
   final AnswerState answerState;
   final bool recallDroppedWord;
   final bool recallAllWords;
+  final bool animateToCorrectPosition;
 
   SentenceScramblerState({
     required this.currentSentence,
@@ -16,6 +17,7 @@ class SentenceScramblerState {
     required this.answerState,
     required this.recallDroppedWord,
     required this.recallAllWords,
+    required this.animateToCorrectPosition,
   });
 
   SentenceScramblerState copyWith({
@@ -24,6 +26,7 @@ class SentenceScramblerState {
     AnswerState? answerState,
     bool? recallDroppedWord,
     bool? recallAllWords,
+    bool? animateToCorrectPosition,
   }) {
     return SentenceScramblerState(
       currentSentence: currentSentence ?? this.currentSentence,
@@ -31,6 +34,7 @@ class SentenceScramblerState {
       answerState: answerState ?? this.answerState,
       recallDroppedWord: recallDroppedWord ?? this.recallDroppedWord,
       recallAllWords: recallAllWords ?? this.recallAllWords,
+      animateToCorrectPosition: animateToCorrectPosition ?? this.animateToCorrectPosition,
     );
   }
 }
@@ -113,6 +117,10 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
   }
 
   recallAnimationCompleted({required List<SentenceWord> words}) {
+
+
+
+
     List<SentenceWord> currentSentence = state.currentSentence;
     for (var c in currentSentence) {
       c.hideChildUI = false;
@@ -125,6 +133,30 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
     }
     state = state.copyWith(currentSentence: currentSentence);
   }
+
+  void showCorrectSentence({required bool runAnimation}){
+
+    if(runAnimation) {
+      List<SentenceWord> currentSentence = state.currentSentence;
+
+      for (var w in currentSentence) {
+        if (w.correctPosition == w.placedPosition) {
+          w.originalOffset = w.placedOffset;
+        } else {
+          for (var word in currentSentence) {
+            if (w.placedPosition == word.correctPosition) {
+              w.originalOffset = word.placedOffset;
+            }
+          }
+        }
+      }
+
+      state = state.copyWith(
+          currentSentence: currentSentence,
+          animateToCorrectPosition: true);
+    }
+  }
+
 }
 
 final sentenceScramblerProvider =
@@ -136,6 +168,7 @@ final sentenceScramblerProvider =
       answerState: AnswerState.notAnswered,
       recallDroppedWord: false,
       recallAllWords: false,
+      animateToCorrectPosition: false,
     ),
   ),
 );

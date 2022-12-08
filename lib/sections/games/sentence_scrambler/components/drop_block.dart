@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:studychinesetoday/animations/pop_back_animation.dart';
+import 'package:studychinesetoday/animations/shake_animation.dart';
 import 'package:studychinesetoday/configs/constants_other.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
 import 'package:studychinesetoday/utils/enums/answer_state.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
@@ -29,78 +32,81 @@ class _DropBlockState extends ConsumerState<DropBlock> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final notifier = ref.read(sentenceScramblerProvider.notifier);
+    final state = ref.watch(sentenceScramblerProvider);
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
-        _offsetPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
+        if (_widgetKey.currentContext != null) {
+          _offsetPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
+        }
       },
     );
 
-    return DragTarget<SentenceWord>(
-      onWillAccept: (word) {
-        return true;
-      },
-      onAccept: (word) {
-        wordData = word.wordData;
-        notifier.wordAccepted(
-          sentenceWord: SentenceWord(
-            wordData: word.wordData,
-            correctPosition: word.correctPosition,
-            placedPosition: widget.position,
-            placedOffset: _offsetPosition,
-          ),
-        );
-      },
-      builder: (context, _, __) {
-        return FittedBox(
-          key: _widgetKey,
-          fit: BoxFit.contain,
-          child: SizedBox(
-            height: size.height * 0.08,
-            width: size.width * 0.12,
-            child: wordData == null
-                ? Container(
-                    decoration: BoxDecoration(
-                        color: AppColors.mediumGrey,
-                        borderRadius: BorderRadius.circular(kRadius)),
-                  )
-                : Consumer(
-                    builder: (_, WidgetRef ref, ___) {
-                      final sentenceState =
-                          ref.watch(sentenceScramblerProvider);
+    return state.animateToCorrectPosition
+        ? const SizedBox()
+        : DragTarget<SentenceWord>(
+            onWillAccept: (word) {
+              return true;
+            },
+            onAccept: (word) {
+              wordData = word.wordData;
+              notifier.wordAccepted(
+                sentenceWord: SentenceWord(
+                  wordData: word.wordData,
+                  correctPosition: word.correctPosition,
+                  placedPosition: widget.position,
+                  placedOffset: _offsetPosition,
+                ),
+              );
+            },
+            builder: (context, _, __) {
+              return FittedBox(
+                key: _widgetKey,
+                fit: BoxFit.contain,
+                child: SizedBox(
+                  width: size.width * kSentenceWordBlockWidth,
+                  height: size.height * kSentenceWordBlockHeight,
+                  child: wordData == null
+                      ? Container(
+                          decoration: BoxDecoration(
+                              color: AppColors.mediumGrey,
+                              borderRadius: BorderRadius.circular(kRadius)),
+                        )
+                      : Consumer(
+                          builder: (_, WidgetRef ref, ___) {
+                            final state = ref.watch(sentenceScramblerProvider);
 
-                      if (sentenceState.recallAllWords) {
-                        WidgetsBinding.instance.addPostFrameCallback(
-                          (timeStamp) {
-                            wordData = null;
-                            setState(() {});
+                            if (state.recallAllWords) {
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                (timeStamp) {
+                                  wordData = null;
+                                  setState(() {});
+                                },
+                              );
+                            }
+
+                            Color backgroundColor = _setResultColor(state);
+
+                            return PopInAnimation(
+                              animate:
+                                  state.answerState == AnswerState.incorrect,
+                              child: ShakeAnimation(
+                                animateOnDemand: false,
+                                animateOnStart: true,
+                                child: LetterBlockContents(wordData: wordData!,
+                                backgroundColor: backgroundColor,
+                                )
+                              ),
+                            );
                           },
-                        );
-                      }
-
-                      Color tileColor = _setResultColor(sentenceState);
-
-                      return Container(
-                        decoration: BoxDecoration(
-                            color: tileColor,
-                            borderRadius: BorderRadius.circular(kRadius)),
-                        child: Center(
-                          child: Text(
-                            wordData!.english,
-                            style: Theme.of(context).textTheme.displayMedium,
-                            textAlign: TextAlign.center,
-                          ),
                         ),
-                      );
-                    },
-                  ),
-          ),
-        );
-      },
-    );
+                ),
+              );
+            },
+          );
   }
 
   Color _setResultColor(SentenceScramblerState sentenceState) {
-    Color tileColor = Colors.amber;
+    Color tileColor = Colors.tealAccent;
 
     if (sentenceState.allPlaced) {
       if (sentenceState.answerState == AnswerState.correct) {

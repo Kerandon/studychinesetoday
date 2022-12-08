@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
+import '../../../../configs/constants_other.dart';
 import '../providers/sentence_scrambler_manager.dart';
 import 'letter_block_contents.dart';
 
@@ -31,6 +32,7 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     final state = ref.watch(sentenceScramblerProvider);
     final notifier = ref.read(sentenceScramblerProvider.notifier);
 
@@ -48,8 +50,8 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
 
     return _isPlaced || _hideChildUI
         ? SizedBox(
-            width: _size.width,
-            height: _size.height,
+            width: size.width * kSentenceWordBlockWidth,
+            height: size.height * kSentenceWordBlockHeight,
           )
         : IgnorePointer(
             key: _widgetKey,
@@ -66,7 +68,7 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
                     sentenceWord: widget.sentenceWord,
                     droppedOffset: details.offset,
                   );
-                      notifier.recallDroppedWord(recall: true);
+                  notifier.recallDroppedWord(recall: true);
                 }
               },
               childWhenDragging: LetterBlockContents(

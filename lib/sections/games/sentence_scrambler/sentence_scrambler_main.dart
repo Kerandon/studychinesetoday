@@ -4,6 +4,7 @@ import 'package:studychinesetoday/animations/spring_translation_animation.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
+import 'package:studychinesetoday/utils/enums/answer_state.dart';
 import '../../../configs/app_colors.dart';
 import '../../../models/word_data.dart';
 import 'components/bottom_buttons.dart';
@@ -28,6 +29,8 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
 
   bool _isSetUpComplete = false;
 
+  bool _hasAnimatedToCorrectPosition = false;
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(sentenceScramblerProvider);
@@ -37,31 +40,42 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
 
     int numberBlocksToAnimateBack = 0;
 
-    List<SentenceWord> words = [];
+    List<SentenceWord> animatingWords = [];
 
     if (state.recallDroppedWord) {
       for (var w in state.currentSentence) {
         if (w.placedPosition == null && w.placedOffset != null) {
-          words = [w];
+          animatingWords = [w];
           numberBlocksToAnimateBack = 1;
         }
       }
     }
 
-    {
-      if (state.recallAllWords) {
-        numberBlocksToAnimateBack = state.currentSentence
-            .where((element) => element.placedOffset != null)
-            .length;
+    if (state.recallAllWords) {
+      numberBlocksToAnimateBack = state.currentSentence
+          .where((element) => element.placedOffset != null)
+          .length;
 
-        words = state.currentSentence
-            .where((element) => element.placedOffset != null)
-            .toList();
-      }
+      animatingWords = state.currentSentence
+          .where((element) => element.placedOffset != null)
+          .toList();
     }
 
-    print(
-        'recall dropped ${state.recallDroppedWord} and all ${state.recallAllWords}');
+    if (state.animateToCorrectPosition) {
+      numberBlocksToAnimateBack = state.currentSentence.length;
+      animatingWords = state.currentSentence;
+    }
+    if (state.answerState == AnswerState.incorrect) {
+    Future.delayed(Duration(milliseconds: 1000), () {
+
+
+        if (mounted) {
+          notifier.showCorrectSentence(runAnimation: true);
+        }
+
+
+    });
+    }
 
     return IgnorePointer(
       ignoring: state.recallDroppedWord || state.recallAllWords,
@@ -123,18 +137,31 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
             numberBlocksToAnimateBack,
             (index) {
               return SpringTranslationAnimation(
-                startOffset: words.elementAt(index).placedOffset,
-                endOffset: words.elementAt(index).originalOffset,
-                animate: state.recallDroppedWord || state.recallAllWords,
+                startOffset: animatingWords.elementAt(index).placedOffset,
+                endOffset: animatingWords.elementAt(index).originalOffset,
+                animate: state.recallDroppedWord ||
+                    state.recallAllWords ||
+                    state.animateToCorrectPosition,
                 animationCompleted: () {
-                  notifier.recallDroppedWord(recall: false);
-                  notifier.recallAllWords(recall: false);
+                  if (state.recallDroppedWord) {
+                    notifier.recallDroppedWord(recall: false);
+                    notifier.recallAnimationCompleted(words: animatingWords);
+                  }
 
-                  notifier.recallAnimationCompleted(words: words);
+                  if (state.recallAllWords) {
+                    notifier.recallAllWords(recall: false);
+                    notifier.recallAnimationCompleted(words: animatingWords);
+                  }
+                  if (state.animateToCorrectPosition) {
+                    notifier.showCorrectSentence(runAnimation: false);
+                  }
                 },
                 child: LetterBlockContents(
-                  wordData: words.elementAt(index).wordData,
+                  wordData: animatingWords.elementAt(index).wordData,
                   hideUI: false,
+                  backgroundColor: state.animateToCorrectPosition
+                      ? Colors.red
+                      : AppColors.offWhite,
                 ),
               );
             },

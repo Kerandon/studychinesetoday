@@ -53,7 +53,7 @@ class _MemoryTileState extends ConsumerState<MemoryTile> {
           memoryState.tappedWords.containsKey(word.key) ||
           memoryState.answeredCorrectly.contains(word.key),
       child: ShakeAnimation(
-        animate: memoryState.answeredCorrectly.contains(word.key),
+        animateOnDemand: memoryState.answeredCorrectly.contains(word.key),
         child: FlipAnimation(
           animate: forwardFlip,
           reverseFlip: reverseFlip,

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
 class SpringTranslationAnimation extends StatefulWidget {
-  const SpringTranslationAnimation(
-      {Key? key,
-      required this.child,
-      required this.animate,
-      this.startOffset,
-      this.endOffset,
-      this.animationCompleted})
-      : super(key: key);
+  const SpringTranslationAnimation({
+    Key? key,
+    required this.child,
+    required this.animate,
+    this.startOffset,
+    this.endOffset,
+    this.animationCompleted,
+  }) : super(key: key);
 
   final Widget child;
   final Offset? startOffset;
@@ -18,7 +18,8 @@ class SpringTranslationAnimation extends StatefulWidget {
   final VoidCallback? animationCompleted;
 
   @override
-  State<SpringTranslationAnimation> createState() => _SpringTranslationAnimationState();
+  State<SpringTranslationAnimation> createState() =>
+      _SpringTranslationAnimationState();
 }
 
 class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
@@ -36,8 +37,8 @@ class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
         }
       });
 
-    const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
-    _springSimulation = SpringSimulation(spring, 0, 1, -20);
+    // const spring = SpringDescription(mass: 60, stiffness: 1, damping: 1);
+    // _springSimulation = SpringSimulation(spring, 0, 1, -20);
 
     super.initState();
   }
@@ -46,7 +47,8 @@ class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
   void didUpdateWidget(covariant SpringTranslationAnimation oldWidget) {
     if (widget.animate) {
       _controller.reset();
-      _controller.animateWith(_springSimulation);
+      _controller.forward();
+      //_controller.animateWith(_springSimulation);
     }
     super.didUpdateWidget(oldWidget);
   }

@@ -10,15 +10,20 @@ class LetterBlockContents extends StatelessWidget {
     required this.wordData,
     this.hideUI = false,
     this.addShadow = false,
+    this.backgroundColor = AppColors.offWhite
   });
 
   final WordData wordData;
   final bool hideUI;
   final bool addShadow;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Container(
+      width: size.width * kSentenceWordBlockWidth,
+      height: size.height * kSentenceWordBlockHeight,
       decoration: hideUI
           ? BoxDecoration(
               border: Border.all(
@@ -27,7 +32,7 @@ class LetterBlockContents extends StatelessWidget {
               ),
             )
           : BoxDecoration(
-              color: AppColors.offWhite,
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(kRadius),
               border: Border.all(
                 color: Colors.white,
@@ -44,11 +49,13 @@ class LetterBlockContents extends StatelessWidget {
             ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Text(
-          wordData.english,
-          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                color: hideUI ? Colors.transparent : Colors.black,
-              ),
+        child: Center(
+          child: Text(
+            wordData.english,
+            style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                  color: hideUI ? Colors.transparent : Colors.black,
+                ),
+          ),
         ),
       ),
     );

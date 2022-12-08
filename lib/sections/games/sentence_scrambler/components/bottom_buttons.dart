@@ -5,26 +5,40 @@ import 'package:studychinesetoday/utils/enums/answer_state.dart';
 
 import '../../../../configs/app_colors.dart';
 
-class BottomButtons extends ConsumerWidget {
+class BottomButtons extends ConsumerStatefulWidget {
   const BottomButtons({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BottomButtons> createState() => _BottomButtonsState();
+}
+
+class _BottomButtonsState extends ConsumerState<BottomButtons> {
+  bool _answerAlreadyChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final state = ref.watch(sentenceScramblerProvider);
     final notifier = ref.read(sentenceScramblerProvider.notifier);
 
     bool canRecall = false;
+    bool canCheckAnswer = false;
 
-    if (state.answerState == AnswerState.notAnswered) {
-      if (state.currentSentence
-          .any((element) => element.placedPosition != null) && !state.recallAllWords) {
-        canRecall = true;
+      if (state.answerState == AnswerState.notAnswered) {
+        if (state.currentSentence
+            .any((element) => element.placedPosition != null) &&
+            !state.recallAllWords) {
+          canRecall = true;
+        }
       }
-    }
-
+      if (
+      state.currentSentence.isNotEmpty &&
+      state.currentSentence.every((element) => element.placedPosition != null) && !_answerAlreadyChecked) {
+          canCheckAnswer = true;
+      }
+    
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -35,9 +49,12 @@ class BottomButtons extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: state.allPlaced
+                onPressed: canCheckAnswer
                     ? () {
                         notifier.checkAnswer();
+                        _answerAlreadyChecked = true;
+                        setState(() {
+                        });
                       }
                     : null,
                 child: Padding(
@@ -51,17 +68,23 @@ class BottomButtons extends ConsumerWidget {
             ),
             SizedBox(width: size.width * 0.05),
             Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: IconButton(
-                    onPressed: canRecall
-                        ? () {
-                            notifier.recallAllWords(recall: true);
-                          }
-                        : null,
-                    icon: Icon(
-                      Icons.refresh_outlined,
-                      color: AppColors.darkGrey,
-                    ))),
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                onPressed: canRecall
+                    ? () {
+                        notifier.recallAllWords(recall: true);
+                      }
+                    : null,
+                icon: Icon(
+                  Icons.refresh_outlined,
+                  color: canRecall ? AppColors.darkGrey : AppColors.mediumGrey,
+                ),
+              ),
+            ),
+            ElevatedButton(onPressed: (){
+              notifier.showCorrectSentence(runAnimation: true);
+            },
+                child: Text('show correct answer'))
           ],
         ),
       ),
