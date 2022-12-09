@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/animations/spring_translation_animation.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
-import 'package:studychinesetoday/utils/enums/answer_state.dart';
+import '../../../animations/spring_translation_animation.dart';
 import '../../../configs/app_colors.dart';
 import '../../../models/word_data.dart';
 import 'components/bottom_buttons.dart';
@@ -29,8 +28,6 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
 
   bool _isSetUpComplete = false;
 
-  bool _hasAnimatedToCorrectPosition = false;
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(sentenceScramblerProvider);
@@ -38,23 +35,17 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
 
     _setUp(notifier);
 
-    int numberBlocksToAnimateBack = 0;
-
     List<SentenceWord> animatingWords = [];
 
     if (state.recallDroppedWord) {
       for (var w in state.currentSentence) {
         if (w.placedPosition == null && w.placedOffset != null) {
           animatingWords = [w];
-          numberBlocksToAnimateBack = 1;
         }
       }
     }
 
     if (state.recallAllWords) {
-      numberBlocksToAnimateBack = state.currentSentence
-          .where((element) => element.placedOffset != null)
-          .length;
 
       animatingWords = state.currentSentence
           .where((element) => element.placedOffset != null)
@@ -62,20 +53,9 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
     }
 
     if (state.animateToCorrectPosition) {
-      numberBlocksToAnimateBack = state.currentSentence.length;
       animatingWords = state.currentSentence;
     }
-    if (state.answerState == AnswerState.incorrect) {
-    Future.delayed(Duration(milliseconds: 1000), () {
 
-
-        if (mounted) {
-          notifier.showCorrectSentence(runAnimation: true);
-        }
-
-
-    });
-    }
 
     return IgnorePointer(
       ignoring: state.recallDroppedWord || state.recallAllWords,
@@ -134,7 +114,7 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
             ),
           ),
           ...List.generate(
-            numberBlocksToAnimateBack,
+            animatingWords.length,
             (index) {
               return SpringTranslationAnimation(
                 startOffset: animatingWords.elementAt(index).placedOffset,
@@ -151,9 +131,6 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
                   if (state.recallAllWords) {
                     notifier.recallAllWords(recall: false);
                     notifier.recallAnimationCompleted(words: animatingWords);
-                  }
-                  if (state.animateToCorrectPosition) {
-                    notifier.showCorrectSentence(runAnimation: false);
                   }
                 },
                 child: LetterBlockContents(

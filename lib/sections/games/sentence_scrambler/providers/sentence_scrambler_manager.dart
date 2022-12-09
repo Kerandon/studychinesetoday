@@ -34,7 +34,8 @@ class SentenceScramblerState {
       answerState: answerState ?? this.answerState,
       recallDroppedWord: recallDroppedWord ?? this.recallDroppedWord,
       recallAllWords: recallAllWords ?? this.recallAllWords,
-      animateToCorrectPosition: animateToCorrectPosition ?? this.animateToCorrectPosition,
+      animateToCorrectPosition:
+          animateToCorrectPosition ?? this.animateToCorrectPosition,
     );
   }
 }
@@ -117,10 +118,6 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
   }
 
   recallAnimationCompleted({required List<SentenceWord> words}) {
-
-
-
-
     List<SentenceWord> currentSentence = state.currentSentence;
     for (var c in currentSentence) {
       c.hideChildUI = false;
@@ -134,29 +131,30 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
     state = state.copyWith(currentSentence: currentSentence);
   }
 
-  void showCorrectSentence({required bool runAnimation}){
+  void showCorrectSentence({required Size screenSize}) {
+    List<SentenceWord> currentSentence = state.currentSentence;
 
-    if(runAnimation) {
-      List<SentenceWord> currentSentence = state.currentSentence;
-
-      for (var w in currentSentence) {
-        if (w.correctPosition == w.placedPosition) {
-          w.originalOffset = w.placedOffset;
-        } else {
-          for (var word in currentSentence) {
-            if (w.placedPosition == word.correctPosition) {
-              w.originalOffset = word.placedOffset;
-            }
-          }
-        }
+    for (var w in currentSentence) {
+      if (w.correctPosition == w.placedPosition) {
+        w.originalOffset = w.placedOffset;
+      } else {
+        SentenceWord word = currentSentence.firstWhere(
+            (element) => w.correctPosition == element.placedPosition);
+        w.originalOffset = word.placedOffset;
       }
-
-      state = state.copyWith(
-          currentSentence: currentSentence,
-          animateToCorrectPosition: true);
     }
-  }
 
+    for(var w in currentSentence){
+      w.originalOffset = Offset(w.originalOffset!.dx,w.originalOffset!.dy + (screenSize.height * 0.20));
+    }
+
+
+    state = state.copyWith(animateToCorrectPosition: true);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      state = state.copyWith(
+          currentSentence: currentSentence, animateToCorrectPosition: true);
+    });
+  }
 }
 
 final sentenceScramblerProvider =

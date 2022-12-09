@@ -6,13 +6,13 @@ class PopInAnimation extends StatefulWidget {
     required this.child,
     required this.animate,
     this.duration = 350,
-    this.animationCompleted,
+    this.onAnimationComplete,
   }) : super(key: key);
 
   final Widget child;
   final bool animate;
   final int duration;
-  final Function? animationCompleted;
+  final Function? onAnimationComplete;
 
   @override
   State<PopInAnimation> createState() => _PopInAnimationState();
@@ -31,7 +31,7 @@ class _PopInAnimationState extends State<PopInAnimation>
       ..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) {
-            widget.animationCompleted?.call();
+            widget.onAnimationComplete?.call();
           }
         },
       );

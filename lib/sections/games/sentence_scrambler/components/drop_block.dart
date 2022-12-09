@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/pop_back_animation.dart';
-import 'package:studychinesetoday/animations/shake_animation.dart';
+
 import 'package:studychinesetoday/configs/constants_other.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
 import 'package:studychinesetoday/utils/enums/answer_state.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
+import '../../../../animations/shake_animation.dart';
 import '../../../../configs/app_colors.dart';
 import '../../../../models/word_data.dart';
 import '../providers/sentence_scrambler_manager.dart';
@@ -31,8 +32,12 @@ class _DropBlockState extends ConsumerState<DropBlock> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final notifier = ref.read(sentenceScramblerProvider.notifier);
     final state = ref.watch(sentenceScramblerProvider);
+    final notifier = ref.read(sentenceScramblerProvider.notifier);
+
+
+
+
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         if (_widgetKey.currentContext != null) {
@@ -45,7 +50,10 @@ class _DropBlockState extends ConsumerState<DropBlock> {
         ? const SizedBox()
         : DragTarget<SentenceWord>(
             onWillAccept: (word) {
-              return true;
+              bool canAccept = true;
+
+                canAccept = !state.currentSentence.any((element) => element.placedPosition == widget.position);
+              return canAccept;
             },
             onAccept: (word) {
               wordData = word.wordData;
@@ -89,13 +97,16 @@ class _DropBlockState extends ConsumerState<DropBlock> {
                             return PopInAnimation(
                               animate:
                                   state.answerState == AnswerState.incorrect,
+                              onAnimationComplete: () {
+                                notifier.showCorrectSentence(screenSize: size);
+                              },
                               child: ShakeAnimation(
-                                animateOnDemand: false,
-                                animateOnStart: true,
-                                child: LetterBlockContents(wordData: wordData!,
-                                backgroundColor: backgroundColor,
-                                )
-                              ),
+                                  animateOnDemand: false,
+                                  animateOnStart: true,
+                                  child: LetterBlockContents(
+                                    wordData: wordData!,
+                                    backgroundColor: backgroundColor,
+                                  )),
                             );
                           },
                         ),

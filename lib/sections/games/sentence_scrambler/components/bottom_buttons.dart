@@ -26,19 +26,20 @@ class _BottomButtonsState extends ConsumerState<BottomButtons> {
     bool canRecall = false;
     bool canCheckAnswer = false;
 
-      if (state.answerState == AnswerState.notAnswered) {
-        if (state.currentSentence
-            .any((element) => element.placedPosition != null) &&
-            !state.recallAllWords) {
-          canRecall = true;
-        }
+    if (state.answerState == AnswerState.notAnswered) {
+      if (state.currentSentence
+              .any((element) => element.placedPosition != null) &&
+          !state.recallAllWords) {
+        canRecall = true;
       }
-      if (
-      state.currentSentence.isNotEmpty &&
-      state.currentSentence.every((element) => element.placedPosition != null) && !_answerAlreadyChecked) {
-          canCheckAnswer = true;
-      }
-    
+    }
+    if (state.currentSentence.isNotEmpty &&
+        state.currentSentence
+            .every((element) => element.placedPosition != null) &&
+        !_answerAlreadyChecked) {
+      canCheckAnswer = true;
+    }
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -53,8 +54,7 @@ class _BottomButtonsState extends ConsumerState<BottomButtons> {
                     ? () {
                         notifier.checkAnswer();
                         _answerAlreadyChecked = true;
-                        setState(() {
-                        });
+                        setState(() {});
                       }
                     : null,
                 child: Padding(
@@ -81,10 +81,6 @@ class _BottomButtonsState extends ConsumerState<BottomButtons> {
                 ),
               ),
             ),
-            ElevatedButton(onPressed: (){
-              notifier.showCorrectSentence(runAnimation: true);
-            },
-                child: Text('show correct answer'))
           ],
         ),
       ),

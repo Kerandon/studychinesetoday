@@ -30,7 +30,7 @@ class _SpringTranslationAnimationState extends State<SpringTranslationAnimation>
   @override
   void initState() {
     _controller = AnimationController(
-        duration: const Duration(milliseconds: 2000), vsync: this)
+        duration: const Duration(milliseconds: 800), vsync: this)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           widget.animationCompleted?.call();
