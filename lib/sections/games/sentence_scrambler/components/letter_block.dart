@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/fly_in_animation.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_block.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
 import '../../../../configs/constants_other.dart';
 import '../providers/sentence_scrambler_manager.dart';
@@ -15,7 +15,7 @@ class LetterBlock extends ConsumerStatefulWidget {
     this.neverHideUI = false,
   });
 
-  final SentenceWord sentenceWord;
+  final SentenceBlock sentenceWord;
   final int index;
   final bool neverHideUI;
 
@@ -39,7 +39,7 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
 
     _getSizeAndPosition(notifier);
 
-    SentenceWord? sentenceWord;
+    SentenceBlock? sentenceWord;
     for (var w in state.currentSentence) {
       if (w.correctPosition == widget.sentenceWord.correctPosition) {
         sentenceWord = w;
@@ -57,7 +57,7 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
         : IgnorePointer(
             key: _widgetKey,
             ignoring: false,
-            child: Draggable<SentenceWord>(
+            child: Draggable<SentenceBlock>(
               data: widget.sentenceWord,
               feedback: LetterBlockContents(
                 wordData: widget.sentenceWord.wordData,

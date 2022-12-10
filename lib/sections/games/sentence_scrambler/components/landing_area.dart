@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
 import 'drop_block.dart';
 
-class LandingArea extends StatefulWidget {
+class LandingArea extends ConsumerWidget {
   const LandingArea({
     super.key,
   });
 
   @override
-  State<LandingArea> createState() => _LandingAreaState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    int numberOfWords =
+        ref.watch(sentenceScramblerProvider).currentSentence.length;
 
-class _LandingAreaState extends State<LandingArea> {
-  int numberOfWords = 4;
+    List<String> _grammar = ['Subject', 'Adverb', 'Adjective', 'Verb'];
 
-  @override
-  Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -27,6 +27,7 @@ class _LandingAreaState extends State<LandingArea> {
             numberOfWords,
             (index) => DropBlock(
               position: index,
+              hintText: _grammar[index],
             ),
           ),
         ),

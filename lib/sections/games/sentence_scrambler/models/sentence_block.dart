@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:studychinesetoday/models/word_data.dart';
 
-class SentenceWord {
+class SentenceBlock {
   final WordData wordData;
   int correctPosition;
   int? placedPosition;
@@ -9,7 +9,7 @@ class SentenceWord {
   Offset? placedOffset;
   bool hideChildUI;
 
-  SentenceWord({
+  SentenceBlock({
     required this.wordData,
     required this.correctPosition,
     this.placedPosition,

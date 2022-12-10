@@ -5,7 +5,7 @@ import 'package:studychinesetoday/animations/spin_animation.dart';
 import 'package:studychinesetoday/animations/spring_translation_animation.dart';
 import 'package:studychinesetoday/configs/constants_other.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_block.dart';
 import 'package:studychinesetoday/utils/enums/answer_state.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
 import '../../../../animations/shake_animation.dart';
@@ -17,9 +17,11 @@ class DropBlock extends ConsumerStatefulWidget {
   const DropBlock({
     super.key,
     required this.position,
+    required this.hintText,
   });
 
   final int position;
+  final String hintText;
 
   @override
   ConsumerState<DropBlock> createState() => _DropBlockState();
@@ -47,7 +49,7 @@ class _DropBlockState extends ConsumerState<DropBlock> {
               _offsetPosition =
                   getWidgetGlobalPosition(positionKey: _widgetKey);
             },
-            child: DragTarget<SentenceWord>(
+            child: DragTarget<SentenceBlock>(
               onWillAccept: (word) {
                 bool canAccept = true;
 
@@ -58,7 +60,7 @@ class _DropBlockState extends ConsumerState<DropBlock> {
               onAccept: (word) {
                 wordData = word.wordData;
                 notifier.wordAccepted(
-                  sentenceWord: SentenceWord(
+                  sentenceWord: SentenceBlock(
                     wordData: word.wordData,
                     correctPosition: word.correctPosition,
                     placedPosition: widget.position,
@@ -78,6 +80,7 @@ class _DropBlockState extends ConsumerState<DropBlock> {
                             decoration: BoxDecoration(
                                 color: AppColors.mediumGrey,
                                 borderRadius: BorderRadius.circular(kRadius)),
+                      child: Center(child: Text(widget.hintText)),
                           )
                         : Consumer(
                             builder: (_, WidgetRef ref, ___) {

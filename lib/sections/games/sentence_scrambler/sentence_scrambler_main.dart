@@ -1,16 +1,18 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:studychinesetoday/animations/spin_animation.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
-import 'package:studychinesetoday/utils/enums/answer_state.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_block.dart';
 import '../../../animations/spring_translation_animation.dart';
 import '../../../configs/app_colors.dart';
 import '../../../models/word_data.dart';
 import 'components/bottom_buttons.dart';
 import 'components/landing_area.dart';
 import 'components/letter_block.dart';
+import 'data/sentences.dart';
+import 'models/sentence.dart';
 
 class SentenceScramblerMain extends ConsumerStatefulWidget {
   const SentenceScramblerMain({Key? key}) : super(key: key);
@@ -21,15 +23,16 @@ class SentenceScramblerMain extends ConsumerStatefulWidget {
 }
 
 class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
-
-  List<WordData> masterSentence = [
-    const WordData(english: 'apples', character: "苹果", pinyin: ""),
-    const WordData(english: 'are', character: "很", pinyin: ""),
-    const WordData(english: "very", character: "好", pinyin: ""),
-    const WordData(english: "delicious", character: "吃", pinyin: "")
-  ];
+  late final Sentence masterSentence;
 
   bool _isSetUpComplete = false;
+
+  @override
+  void initState() {
+    final random = Random().nextInt(sentences.length);
+    masterSentence = sentences[random];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,7 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
 
     _setUp(notifier);
 
-    List<SentenceWord> animatingWords = [];
+    List<SentenceBlock> animatingWords = [];
 
     if (state.recallDroppedWord) {
       for (var w in state.currentSentence) {
@@ -49,7 +52,6 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
     }
 
     if (state.recallAllWords) {
-
       animatingWords = state.currentSentence
           .where((element) => element.placedOffset != null)
           .toList();
@@ -58,7 +60,6 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
     if (state.animateToCorrectPosition) {
       animatingWords = state.currentSentence;
     }
-
 
     return IgnorePointer(
       ignoring: state.recallDroppedWord || state.recallAllWords,
@@ -78,7 +79,11 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
                   child: Stack(
                     children: [
                       Align(
-                        alignment: const Alignment(0, -1.0),
+                        alignment: const Alignment(0, -0.85),
+                        child: Text(masterSentence.english),
+                      ),
+                      Align(
+                        alignment: const Alignment(0, -0.80),
                         child: SizedBox(
                           width: biggest.width,
                           height: biggest.height * 0.40,
@@ -86,7 +91,7 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
                         ),
                       ),
                       Align(
-                        alignment: const Alignment(0, 0.10),
+                        alignment: const Alignment(0, 0.50),
                         child: SizedBox(
                           height: biggest.height * 0.40,
                           width: double.infinity,
@@ -155,10 +160,11 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
   void _setUp(SentenceScramblerNotifier managerNotifier) {
     if (!_isSetUpComplete) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        List<SentenceWord> fullSentence = [];
-        for (int i = 0; i < masterSentence.length; i++) {
-          fullSentence.add(SentenceWord(
-              wordData: masterSentence.elementAt(i), correctPosition: i));
+        List<SentenceBlock> fullSentence = [];
+        for (int i = 0; i < masterSentence.wordDataList.length; i++) {
+          fullSentence.add(SentenceBlock(
+              wordData: masterSentence.wordDataList.elementAt(i),
+              correctPosition: i));
         }
         fullSentence.shuffle();
         managerNotifier.setCurrentSentence(sentence: fullSentence);

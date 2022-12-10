@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/utils/enums/answer_state.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_block.dart';
 
 class SentenceScramblerState {
-  final List<SentenceWord> currentSentence;
+  final List<SentenceBlock> currentSentence;
   final bool allPlaced;
   final AnswerState answerState;
   final bool recallDroppedWord;
@@ -21,7 +21,7 @@ class SentenceScramblerState {
   });
 
   SentenceScramblerState copyWith({
-    List<SentenceWord>? currentSentence,
+    List<SentenceBlock>? currentSentence,
     bool? allPlaced,
     AnswerState? answerState,
     bool? recallDroppedWord,
@@ -43,13 +43,13 @@ class SentenceScramblerState {
 class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
   SentenceScramblerNotifier(super.state);
 
-  void setCurrentSentence({required List<SentenceWord> sentence}) {
+  void setCurrentSentence({required List<SentenceBlock> sentence}) {
     state = state.copyWith(currentSentence: sentence);
   }
 
   void setBlockOriginalPosition(
-      {required SentenceWord sentenceWord, required Offset offsetPosition}) {
-    List<SentenceWord> currentSentence = state.currentSentence;
+      {required SentenceBlock sentenceWord, required Offset offsetPosition}) {
+    List<SentenceBlock> currentSentence = state.currentSentence;
 
     for (var w in currentSentence) {
       if (w.correctPosition == sentenceWord.correctPosition) {
@@ -62,8 +62,8 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
   }
 
   void blockDragCanceled(
-      {required SentenceWord sentenceWord, required Offset droppedOffset}) {
-    List<SentenceWord> currentSentence = state.currentSentence;
+      {required SentenceBlock sentenceWord, required Offset droppedOffset}) {
+    List<SentenceBlock> currentSentence = state.currentSentence;
 
     for (var w in currentSentence) {
       if (w.correctPosition == sentenceWord.correctPosition) {
@@ -75,8 +75,8 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
     state = state.copyWith(currentSentence: currentSentence);
   }
 
-  void wordAccepted({required SentenceWord sentenceWord}) {
-    List<SentenceWord> currentSentence = state.currentSentence;
+  void wordAccepted({required SentenceBlock sentenceWord}) {
+    List<SentenceBlock> currentSentence = state.currentSentence;
 
     for (var w in currentSentence) {
       if (w.correctPosition == sentenceWord.correctPosition) {
@@ -117,8 +117,8 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
     );
   }
 
-  recallAnimationCompleted({required List<SentenceWord> words}) {
-    List<SentenceWord> currentSentence = state.currentSentence;
+  recallAnimationCompleted({required List<SentenceBlock> words}) {
+    List<SentenceBlock> currentSentence = state.currentSentence;
     for (var c in currentSentence) {
       c.hideChildUI = false;
       for (var w in words) {
@@ -132,13 +132,13 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
   }
 
   void showCorrectSentence({required Size screenSize}) {
-    List<SentenceWord> currentSentence = state.currentSentence;
+    List<SentenceBlock> currentSentence = state.currentSentence;
 
     for (var w in currentSentence) {
       if (w.correctPosition == w.placedPosition) {
         w.originalOffset = w.placedOffset;
       } else {
-        SentenceWord word = currentSentence.firstWhere(
+        SentenceBlock word = currentSentence.firstWhere(
             (element) => w.correctPosition == element.placedPosition);
         w.originalOffset = word.placedOffset;
       }
