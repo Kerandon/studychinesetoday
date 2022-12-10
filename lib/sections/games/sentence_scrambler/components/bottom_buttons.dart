@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
+import 'package:studychinesetoday/sections/games/sentence_scrambler/sentence_scrambler_main.dart';
 import 'package:studychinesetoday/utils/enums/answer_state.dart';
 import '../../../../configs/app_colors.dart';
 
@@ -76,6 +77,27 @@ class _BottomButtonsState extends ConsumerState<BottomButtons> {
                     : null,
                 icon: Icon(
                   Icons.refresh_outlined,
+                  color: canRecall ? AppColors.darkGrey : AppColors.mediumGrey,
+                ),
+              ),
+            ),
+            SizedBox(width: size.width * 0.05),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                onPressed: (){
+                  notifier.reset();
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, __, ___)
+                    => const SentenceScramblerMain()
+                    )
+
+                    );
+                  });
+
+                },
+                icon: Icon(
+                  Icons.fiber_new_rounded,
                   color: canRecall ? AppColors.darkGrey : AppColors.mediumGrey,
                 ),
               ),

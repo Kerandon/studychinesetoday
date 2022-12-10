@@ -10,6 +10,7 @@ class SentenceScramblerState {
   final bool recallDroppedWord;
   final bool recallAllWords;
   final bool animateToCorrectPosition;
+  final bool newSentence;
 
   SentenceScramblerState({
     required this.currentSentence,
@@ -18,6 +19,7 @@ class SentenceScramblerState {
     required this.recallDroppedWord,
     required this.recallAllWords,
     required this.animateToCorrectPosition,
+    required this.newSentence,
   });
 
   SentenceScramblerState copyWith({
@@ -27,6 +29,7 @@ class SentenceScramblerState {
     bool? recallDroppedWord,
     bool? recallAllWords,
     bool? animateToCorrectPosition,
+    bool? newSentence,
   }) {
     return SentenceScramblerState(
       currentSentence: currentSentence ?? this.currentSentence,
@@ -36,6 +39,7 @@ class SentenceScramblerState {
       recallAllWords: recallAllWords ?? this.recallAllWords,
       animateToCorrectPosition:
           animateToCorrectPosition ?? this.animateToCorrectPosition,
+      newSentence: newSentence ?? this.newSentence,
     );
   }
 }
@@ -144,16 +148,35 @@ class SentenceScramblerNotifier extends StateNotifier<SentenceScramblerState> {
       }
     }
 
-    for(var w in currentSentence){
-      w.originalOffset = Offset(w.originalOffset!.dx,w.originalOffset!.dy + (screenSize.height * 0.20));
+    for (var w in currentSentence) {
+      w.originalOffset = Offset(w.originalOffset!.dx,
+          w.originalOffset!.dy + (screenSize.height * 0.20));
     }
-
 
     state = state.copyWith(animateToCorrectPosition: true);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       state = state.copyWith(
           currentSentence: currentSentence, animateToCorrectPosition: true);
     });
+  }
+
+  void generateNewSentence({required bool generate}) {
+      state = state.copyWith(newSentence: generate);
+  }
+
+  void reset(){
+    state = state.copyWith(
+        currentSentence: [],
+        allPlaced: false,
+        answerState: AnswerState.notAnswered,
+        recallDroppedWord: false,
+        recallAllWords: false,
+        animateToCorrectPosition: false,
+        newSentence: false,
+
+
+    );
+
   }
 }
 
@@ -167,6 +190,7 @@ final sentenceScramblerProvider =
       recallDroppedWord: false,
       recallAllWords: false,
       animateToCorrectPosition: false,
+      newSentence: false,
     ),
   ),
 );

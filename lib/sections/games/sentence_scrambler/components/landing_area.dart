@@ -13,7 +13,7 @@ class LandingArea extends ConsumerWidget {
     int numberOfWords =
         ref.watch(sentenceScramblerProvider).currentSentence.length;
 
-    List<String> _grammar = ['Subject', 'Adverb', 'Adjective', 'Verb'];
+    List<String> grammar = ['Subject', 'Adverb', 'Adjective', 'Verb'];
 
     return SizedBox(
       width: double.infinity,
@@ -27,7 +27,7 @@ class LandingArea extends ConsumerWidget {
             numberOfWords,
             (index) => DropBlock(
               position: index,
-              hintText: _grammar[index],
+              hintText: grammar[index],
             ),
           ),
         ),

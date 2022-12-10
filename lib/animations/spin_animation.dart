@@ -20,7 +20,7 @@ class _SpinAnimationState extends State<SpinAnimation>
   void initState() {
     super.initState();
     _controller =
-        AnimationController(duration: Duration(milliseconds: 800), vsync: this);
+        AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
 
     _spin = Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(parent: _controller, curve: Curves.elasticInOut));

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:studychinesetoday/sections/games/sentence_scrambler/sentence_scrambler_main.dart';
 import 'package:studychinesetoday/sections/home_page/tile_title.dart';
-
 import '../../configs/app_theme.dart';
 import '../../configs/constants_other.dart';
+import '../games/sentence_scrambler/sentence_scrambler_main.dart';
 import 'home_page_tile.dart';
 
 class HomePageActivitiesTile extends StatelessWidget {
@@ -35,7 +34,8 @@ class HomePageActivitiesTile extends StatelessWidget {
                 HomePageTile(
                   title: 'Sentence Builder',
                   callback: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SentenceScramblerMain()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const SentenceScramblerMain()));
                   },
                 ),
                 HomePageTile(

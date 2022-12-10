@@ -46,9 +46,10 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
       }
     }
 
-    _isPlaced = sentenceWord!.placedPosition != null;
-    _hideChildUI = sentenceWord.hideChildUI;
-
+    if(sentenceWord != null) {
+      _isPlaced = sentenceWord.placedPosition != null;
+      _hideChildUI = sentenceWord.hideChildUI;
+    }
     return _isPlaced || _hideChildUI
         ? SizedBox(
             width: size.width * kSentenceWordBlockWidth,

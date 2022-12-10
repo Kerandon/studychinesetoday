@@ -80,7 +80,7 @@ class _DropBlockState extends ConsumerState<DropBlock> {
                             decoration: BoxDecoration(
                                 color: AppColors.mediumGrey,
                                 borderRadius: BorderRadius.circular(kRadius)),
-                      child: Center(child: Text(widget.hintText)),
+                            child: Center(child: Text(widget.hintText)),
                           )
                         : Consumer(
                             builder: (_, WidgetRef ref, ___) {
@@ -96,30 +96,28 @@ class _DropBlockState extends ConsumerState<DropBlock> {
                                 );
                               }
 
-                              Color backgroundColor = _setResultColor(state);
-
-                              return PopInAnimation(
-                                animate:
-                                    state.answerState == AnswerState.incorrect,
-                                onAnimationComplete: () {
-                                  notifier.showCorrectSentence(
-                                      screenSize: size);
-                                },
-                                child: ShakeAnimation(
-                                  animateOnDemand: false,
-                                  animateOnStart: true,
-                                  child: SpinAnimation(
+                              return ShakeAnimation(
+                                animateOnDemand: false,
+                                animateOnStart: true,
+                                child: SpinAnimation(
+                                  animate:
+                                      state.answerState == AnswerState.correct,
+                                  child: CustomTranslationAnimation(
+                                    delay: 800,
                                     animate: state.answerState ==
                                         AnswerState.correct,
-                                    child: CustomTranslationAnimation(
-                                      delay: 800,
+                                    endOffset: Offset(0, size.height * 0.20),
+                                    addSpringEffect: true,
+                                    child: PopBackAnimation(
                                       animate: state.answerState ==
-                                          AnswerState.correct,
-                                      endOffset: Offset(0, size.height * 0.20),
-                                      addSpringEffect: true,
+                                          AnswerState.incorrect,
+                                      onAnimationComplete: () {
+                                        notifier.showCorrectSentence(
+                                            screenSize: size);
+                                      },
                                       child: LetterBlockContents(
                                         wordData: wordData!,
-                                        backgroundColor: backgroundColor,
+                                        backgroundColor: AppColors.offWhite,
                                       ),
                                     ),
                                   ),

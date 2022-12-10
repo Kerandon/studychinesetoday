@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 
-class PopInAnimation extends StatefulWidget {
-  const PopInAnimation({
+class PopBackAnimation extends StatefulWidget {
+  const PopBackAnimation({
     Key? key,
     required this.child,
     required this.animate,
     this.duration = 350,
+    this.delay,
     this.onAnimationComplete,
   }) : super(key: key);
 
   final Widget child;
   final bool animate;
   final int duration;
+  final int? delay;
   final Function? onAnimationComplete;
 
   @override
-  State<PopInAnimation> createState() => _PopInAnimationState();
+  State<PopBackAnimation> createState() => _PopBackAnimationState();
 }
 
-class _PopInAnimationState extends State<PopInAnimation>
+class _PopBackAnimationState extends State<PopBackAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -52,11 +54,23 @@ class _PopInAnimationState extends State<PopInAnimation>
   }
 
   @override
-  void didUpdateWidget(covariant PopInAnimation oldWidget) {
+  void didUpdateWidget(covariant PopBackAnimation oldWidget) {
+    if(widget.delay != null){
+      Future.delayed(Duration(milliseconds: widget.delay!),(){
+        if(mounted) {
+          _runAnimation();
+        }
+      });
+    }else {
+      _runAnimation();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _runAnimation() {
     if (widget.animate) {
       _controller.forward();
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
