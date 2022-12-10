@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
 import 'package:studychinesetoday/utils/enums/answer_state.dart';
-
 import '../../../../configs/app_colors.dart';
 
 class BottomButtons extends ConsumerStatefulWidget {

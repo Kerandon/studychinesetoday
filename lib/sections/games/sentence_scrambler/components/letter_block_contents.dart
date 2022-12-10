@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:studychinesetoday/configs/app_colors.dart';
 import 'package:studychinesetoday/configs/constants_other.dart';
-
 import '../../../../models/word_data.dart';
 
 class LetterBlockContents extends StatelessWidget {
-  const LetterBlockContents({
-    super.key,
-    required this.wordData,
-    this.hideUI = false,
-    this.addShadow = false,
-    this.backgroundColor = AppColors.offWhite
-  });
+  const LetterBlockContents(
+      {super.key,
+      required this.wordData,
+      this.hideUI = false,
+      this.addShadow = false,
+      this.backgroundColor = AppColors.offWhite});
 
   final WordData wordData;
   final bool hideUI;
@@ -51,7 +49,7 @@ class LetterBlockContents extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Text(
-            wordData.english,
+            wordData.character,
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   color: hideUI ? Colors.transparent : Colors.black,
                 ),

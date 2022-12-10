@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/animations/pop_back_animation.dart';
-
+import 'package:studychinesetoday/animations/spin_animation.dart';
+import 'package:studychinesetoday/animations/spring_translation_animation.dart';
 import 'package:studychinesetoday/configs/constants_other.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
@@ -28,6 +29,7 @@ class _DropBlockState extends ConsumerState<DropBlock> {
   final _widgetKey = GlobalKey();
   Offset _offsetPosition = const Offset(0, 0);
   WordData? wordData;
+  bool _animateOnStart = true;
 
   @override
   Widget build(BuildContext context) {
@@ -35,84 +37,97 @@ class _DropBlockState extends ConsumerState<DropBlock> {
     final state = ref.watch(sentenceScramblerProvider);
     final notifier = ref.read(sentenceScramblerProvider.notifier);
 
-
-
-
-    WidgetsBinding.instance.addPostFrameCallback(
-      (timeStamp) {
-        if (_widgetKey.currentContext != null) {
-          _offsetPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
-        }
-      },
-    );
-
     return state.animateToCorrectPosition
         ? const SizedBox()
-        : DragTarget<SentenceWord>(
-            onWillAccept: (word) {
-              bool canAccept = true;
-
-                canAccept = !state.currentSentence.any((element) => element.placedPosition == widget.position);
-              return canAccept;
+        : CustomTranslationAnimation(
+            beginOffset: Offset(0, size.height * -0.50),
+            animate: _animateOnStart,
+            onAnimationComplete: () {
+              _animateOnStart = false;
+              _offsetPosition =
+                  getWidgetGlobalPosition(positionKey: _widgetKey);
             },
-            onAccept: (word) {
-              wordData = word.wordData;
-              notifier.wordAccepted(
-                sentenceWord: SentenceWord(
-                  wordData: word.wordData,
-                  correctPosition: word.correctPosition,
-                  placedPosition: widget.position,
-                  placedOffset: _offsetPosition,
-                ),
-              );
-            },
-            builder: (context, _, __) {
-              return FittedBox(
-                key: _widgetKey,
-                fit: BoxFit.contain,
-                child: SizedBox(
-                  width: size.width * kSentenceWordBlockWidth,
-                  height: size.height * kSentenceWordBlockHeight,
-                  child: wordData == null
-                      ? Container(
-                          decoration: BoxDecoration(
-                              color: AppColors.mediumGrey,
-                              borderRadius: BorderRadius.circular(kRadius)),
-                        )
-                      : Consumer(
-                          builder: (_, WidgetRef ref, ___) {
-                            final state = ref.watch(sentenceScramblerProvider);
+            child: DragTarget<SentenceWord>(
+              onWillAccept: (word) {
+                bool canAccept = true;
 
-                            if (state.recallAllWords) {
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                (timeStamp) {
-                                  wordData = null;
-                                  setState(() {});
+                canAccept = !state.currentSentence.any(
+                    (element) => element.placedPosition == widget.position);
+                return canAccept;
+              },
+              onAccept: (word) {
+                wordData = word.wordData;
+                notifier.wordAccepted(
+                  sentenceWord: SentenceWord(
+                    wordData: word.wordData,
+                    correctPosition: word.correctPosition,
+                    placedPosition: widget.position,
+                    placedOffset: _offsetPosition,
+                  ),
+                );
+              },
+              builder: (context, _, __) {
+                return FittedBox(
+                  key: _widgetKey,
+                  fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: size.width * kSentenceWordBlockWidth,
+                    height: size.height * kSentenceWordBlockHeight,
+                    child: wordData == null
+                        ? Container(
+                            decoration: BoxDecoration(
+                                color: AppColors.mediumGrey,
+                                borderRadius: BorderRadius.circular(kRadius)),
+                          )
+                        : Consumer(
+                            builder: (_, WidgetRef ref, ___) {
+                              final state =
+                                  ref.watch(sentenceScramblerProvider);
+
+                              if (state.recallAllWords) {
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (timeStamp) {
+                                    wordData = null;
+                                    setState(() {});
+                                  },
+                                );
+                              }
+
+                              Color backgroundColor = _setResultColor(state);
+
+                              return PopInAnimation(
+                                animate:
+                                    state.answerState == AnswerState.incorrect,
+                                onAnimationComplete: () {
+                                  notifier.showCorrectSentence(
+                                      screenSize: size);
                                 },
-                              );
-                            }
-
-                            Color backgroundColor = _setResultColor(state);
-
-                            return PopInAnimation(
-                              animate:
-                                  state.answerState == AnswerState.incorrect,
-                              onAnimationComplete: () {
-                                notifier.showCorrectSentence(screenSize: size);
-                              },
-                              child: ShakeAnimation(
+                                child: ShakeAnimation(
                                   animateOnDemand: false,
                                   animateOnStart: true,
-                                  child: LetterBlockContents(
-                                    wordData: wordData!,
-                                    backgroundColor: backgroundColor,
-                                  )),
-                            );
-                          },
-                        ),
-                ),
-              );
-            },
+                                  child: SpinAnimation(
+                                    animate: state.answerState ==
+                                        AnswerState.correct,
+                                    child: CustomTranslationAnimation(
+                                      delay: 800,
+                                      animate: state.answerState ==
+                                          AnswerState.correct,
+                                      endOffset: Offset(0, size.height * 0.20),
+                                      addSpringEffect: true,
+                                      child: LetterBlockContents(
+                                        wordData: wordData!,
+                                        backgroundColor: backgroundColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                );
+              },
+            ),
           );
   }
 

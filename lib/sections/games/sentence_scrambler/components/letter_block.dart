@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:studychinesetoday/animations/fly_in_animation.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
 import 'package:studychinesetoday/utils/methods_other.dart';
 import '../../../../configs/constants_other.dart';
@@ -24,11 +25,11 @@ class LetterBlock extends ConsumerStatefulWidget {
 
 class _LetterBlockState extends ConsumerState<LetterBlock> {
   final _widgetKey = GlobalKey();
-  Size _size = const Size(0, 0);
   Offset _originalPosition = const Offset(0, 0);
   bool _isPlaced = false;
   bool _hideChildUI = false;
   bool _haveSetUp = false;
+  bool _animateOnStart = true;
 
   @override
   Widget build(BuildContext context) {
@@ -75,10 +76,16 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
                 wordData: widget.sentenceWord.wordData,
                 hideUI: true,
               ),
-              child: LetterBlockContents(
-                wordData: widget.sentenceWord.wordData,
-                hideUI: false,
-                addShadow: false,
+              child: FlyInAnimation(
+                animateOnDemand: _animateOnStart,
+                onAnimationComplete: () {
+                  _animateOnStart = false;
+                },
+                child: LetterBlockContents(
+                  wordData: widget.sentenceWord.wordData,
+                  hideUI: false,
+                  addShadow: false,
+                ),
               ),
             ),
           );
@@ -87,13 +94,12 @@ class _LetterBlockState extends ConsumerState<LetterBlock> {
   void _getSizeAndPosition(SentenceScramblerNotifier notifier) {
     if (!_haveSetUp) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _size = getWidgetSize(key: _widgetKey);
         _originalPosition = getWidgetGlobalPosition(positionKey: _widgetKey);
         notifier.setBlockOriginalPosition(
             sentenceWord: widget.sentenceWord,
             offsetPosition: _originalPosition);
-        _haveSetUp = true;
       });
+      _haveSetUp = true;
     }
   }
 }

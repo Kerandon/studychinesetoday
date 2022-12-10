@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:studychinesetoday/animations/spin_animation.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/components/letter_block_contents.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/providers/sentence_scrambler_manager.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/models/sentence_word.dart';
+import 'package:studychinesetoday/utils/enums/answer_state.dart';
 import '../../../animations/spring_translation_animation.dart';
 import '../../../configs/app_colors.dart';
 import '../../../models/word_data.dart';
@@ -19,11 +21,12 @@ class SentenceScramblerMain extends ConsumerStatefulWidget {
 }
 
 class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
+
   List<WordData> masterSentence = [
-    const WordData(english: 'apples', character: "", pinyin: ""),
-    const WordData(english: 'are', character: "", pinyin: ""),
-    const WordData(english: "very", character: "", pinyin: ""),
-    const WordData(english: "delicious", character: "", pinyin: "")
+    const WordData(english: 'apples', character: "苹果", pinyin: ""),
+    const WordData(english: 'are', character: "很", pinyin: ""),
+    const WordData(english: "very", character: "好", pinyin: ""),
+    const WordData(english: "delicious", character: "吃", pinyin: "")
   ];
 
   bool _isSetUpComplete = false;
@@ -116,13 +119,14 @@ class _SentenceScramblerMainState extends ConsumerState<SentenceScramblerMain> {
           ...List.generate(
             animatingWords.length,
             (index) {
-              return SpringTranslationAnimation(
-                startOffset: animatingWords.elementAt(index).placedOffset,
+              return CustomTranslationAnimation(
+                addSpringEffect: true,
+                beginOffset: animatingWords.elementAt(index).placedOffset,
                 endOffset: animatingWords.elementAt(index).originalOffset,
                 animate: state.recallDroppedWord ||
                     state.recallAllWords ||
                     state.animateToCorrectPosition,
-                animationCompleted: () {
+                onAnimationComplete: () {
                   if (state.recallDroppedWord) {
                     notifier.recallDroppedWord(recall: false);
                     notifier.recallAnimationCompleted(words: animatingWords);

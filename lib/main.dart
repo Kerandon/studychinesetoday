@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:studychinesetoday/sections/games/sentence_scrambler/sentence_scrambler_main.dart';
-import 'package:studychinesetoday/sections/home_page/home_page_main.dart';
 import 'configs/app_theme.dart';
 
 Future<void> main() async {
@@ -23,10 +22,12 @@ Future<void> main() async {
     options: firebaseOptions,
   );
 
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ],
+  );
 
   runApp(
     const ProviderScope(

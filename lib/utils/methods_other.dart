@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 Offset getWidgetGlobalPosition({required GlobalKey positionKey}) {
@@ -13,4 +15,16 @@ Size getWidgetSize({required GlobalKey key}) {
   } else {
     return const Size(0, 0);
   }
+}
+
+int getRandomPositiveOrNegativeInt({required int max, int? min}) {
+  int value = Random().nextInt(max);
+  if(min != null && value < min){
+    value == min;
+  }
+  bool isNegativeWidth = Random().nextBool();
+  if(isNegativeWidth){
+    value *= -1;
+  }
+  return value;
 }
